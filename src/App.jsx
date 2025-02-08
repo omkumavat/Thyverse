@@ -14,7 +14,8 @@ import {
 import logo from "./Images/logo.png";
 import ServiceCard from "./Components/ServiceCard";
 import Throat from "./Images/Throa.jpg";
-import Contact from "./Images/contact.gif";
+import {motion} from "framer-motion"
+import Contact from "./Images/contact.gif"
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -127,7 +128,12 @@ function App() {
         <div className="container mx-auto px-6 py-10">
           <div className="grid md:grid-cols-2 gap-16 items-center px-6 md:px-12 lg:px-20 py-16">
             {/* Left Content */}
-            <div className="flex flex-col justify-center items-center gap-y-6 h-full">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.5 }}
+              className="flex flex-col justify-center items-center gap-y-6 h-full"
+            >
               {/* Content Box */}
               <div className="bg-white text-gray-900 p-6 md:p-8 rounded-lg shadow-lg flex flex-col gap-y-4 min-h-[400px] h-full">
                 <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-cyan-600">
@@ -141,10 +147,15 @@ function App() {
                   Learn More <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
-            </div>
+            </motion.div>
 
             {/* Right Image */}
-            <div className="hidden md:block relative">
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.5 }}
+              className="hidden md:block relative"
+            >
               <img
                 src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80"
                 alt="Medical Technology"
@@ -152,7 +163,7 @@ function App() {
               />
               {/* Optional Gradient Overlay for Better Contrast */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-lg"></div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </header>
