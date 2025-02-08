@@ -178,7 +178,12 @@ function App() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-12">
-            <div className="group bg-orange-400 p-8 hover:bg-orange-500 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="group bg-orange-400 p-8 hover:bg-orange-500 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+            >
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Target className="w-8 h-8 text-blue-800 group-hover:rotate-180 transition-transform duration-500" />
               </div>
@@ -190,9 +195,14 @@ function App() {
                 all adult age groups.
               </p>
               <div className="mt-6 h-1 w-20 bg-blue-600 group-hover:w-full transition-all duration-300"></div>
-            </div>
+            </motion.div>
 
-            <div className="group bg-orange-400 hover:bg-orange-500 p-8 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="group bg-orange-400 hover:bg-orange-500 p-8 rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+            >
               <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Microscope className="w-8 h-8 text-cyan-600 group-hover:rotate-12 transition-transform duration-300" />
               </div>
@@ -204,7 +214,7 @@ function App() {
                 platform for thyroid-diseased patients.
               </p>
               <div className="mt-6 h-1 w-20 bg-cyan-600 group-hover:w-full transition-all duration-300"></div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
