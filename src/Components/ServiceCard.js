@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import {
   FaUserCircle,
   FaMicroscope,
@@ -12,50 +13,54 @@ const services = [
   {
     id: 1,
     title: "Personalized Dashboard",
-    icon: <FaUserCircle className="text-blue-600 text-4xl" />,
+    icon: <FaUserCircle className="text-blue-600" />,
   },
   {
     id: 2,
     title: "Book your AI-based thyroid scan",
-    icon: <FaMicroscope className="text-green-600 text-4xl" />,
+    icon: <FaMicroscope className="text-green-600" />,
   },
   {
     id: 3,
     title: "Consult with a thyroid specialist",
-    icon: <FaUserMd className="text-red-600 text-4xl" />,
+    icon: <FaUserMd className="text-red-600" />,
   },
   {
     id: 4,
     title: "Medication and lifestyle support",
-    icon: <FaPills className="text-purple-600 text-4xl" />,
+    icon: <FaPills className="text-purple-600" />,
   },
   {
     id: 5,
     title: "Community of thyroid warriors",
-    icon: <FaUsers className="text-yellow-600 text-4xl" />,
+    icon: <FaUsers className="text-yellow-600" />,
   },
   {
     id: 6,
     title: "Up-to-date research & health insights",
-    icon: <FaBookOpen className="text-teal-600 text-4xl" />,
+    icon: <FaBookOpen className="text-teal-600" />,
   },
 ];
 
 const ServiceCard = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-8">
-      {services.map((service) => (
-        <div
+      {services.map((service, index) => (
+        <motion.div
           key={service.id}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: index * 0.2 }}
+          viewport={{ once: false, amount: 0.2 }}
           className="p-4 bg-gray-50 font-poppins rounded-3xl text-center hover:scale-105 border border-gray-300 hover:shadow-md hover:shadow-white transition duration-300 flex flex-col items-center w-[300px] h-[250px] sm:w-[350px] sm:h-[280px]"
         >
           {React.cloneElement(service.icon, {
-            className: `${service.icon.props.className} text-5xl`, // Preserve colors & increase size
+            className: `${service.icon.props.className} text-5xl`,
           })}
           <h3 className="text-2xl font-bold text-gray-800 mt-6">
             {service.title}
           </h3>
-        </div>
+        </motion.div>
       ))}
     </div>
   );

@@ -14,8 +14,8 @@ import {
 import logo from "./Images/logo.png";
 import ServiceCard from "./Components/ServiceCard";
 import Throat from "./Images/Throa.jpg";
-import {motion} from "framer-motion"
-import Contact from "./Images/contact.gif"
+import { motion } from "framer-motion";
+import Contact from "./Images/contact.gif";
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -129,9 +129,10 @@ function App() {
           <div className="grid md:grid-cols-2 gap-16 items-center px-6 md:px-12 lg:px-20 py-16">
             {/* Left Content */}
             <motion.div
+              whileInView={{ opacity: 1, x: 0 }}
               initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1.5 }}
+              viewport={{ once: false, amount: 0.2 }}
               className="flex flex-col justify-center items-center gap-y-6 h-full"
             >
               {/* Content Box */}
@@ -151,10 +152,11 @@ function App() {
 
             {/* Right Image */}
             <motion.div
+              whileInView={{ opacity: 1, x: 0 }}
               initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1.5 }}
-              className="hidden md:block relative"
+              viewport={{ once: false, amount: 0.2 }}
+              className="flex flex-col justify-center items-center gap-y-6 h-full"
             >
               <img
                 src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80"
@@ -170,12 +172,18 @@ function App() {
       {/* vision and mission */}
       <section className="py-4 bg-gray-50">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col items-center">
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            viewport={{ once: false, amount: 0.2 }}
+            className="flex flex-col items-center"
+          >
             <h2 className="text-5xl font-bold font-poppins text-center mb-2">
               Our Vision & Mission
             </h2>
             <div className="h-2 bg-black w-[35%] mb-3"></div>
-          </div>
+          </motion.div>
 
           <div className="grid md:grid-cols-2 gap-12">
             <motion.div
@@ -270,17 +278,35 @@ function App() {
       {/* Contact Section */}
       <section className="py-2" id="contact">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center">
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            viewport={{ once: false, amount: 0.2 }}
+            className="flex flex-col items-center"
+          >
             <h2 className="text-3xl font-bold text-center font-poppins mb-2">
               Get in Touch
             </h2>
             <div className="h-1 bg-black w-[20%]"></div>
-          </div>
+          </motion.div>
           <div className="flex justify-center items-center">
-            <div className="">
+            <motion.div
+              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, x: -50 }}
+              transition={{ duration: 1.5 }}
+              viewport={{ once: false, amount: 0.2 }}
+              className=""
+            >
               <img src={Contact} className="max-w-full h-auto" alt="Contact" />
-            </div>
-            <div className="w-[40%] bg-gray-300 p-8 rounded-lg shadow-lg">
+            </motion.div>
+            <motion.div
+              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, x: 50 }}
+              transition={{ duration: 1.5 }}
+              viewport={{ once: false, amount: 0.2 }}
+              className="w-[40%] bg-gray-300 p-8 rounded-lg shadow-lg"
+            >
               <form className="space-y-6 font-poppins">
                 <div>
                   <label
@@ -331,7 +357,7 @@ function App() {
                   Send Message
                 </button>
               </form>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
