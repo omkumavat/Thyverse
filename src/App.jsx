@@ -33,32 +33,32 @@ function App() {
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-4">
               <a
                 href="#home"
-                className="text-gray-600 font-poppins hover:text-blue-600 transition-colors"
+                className="text-gray-600 font-poppins px-4 py-2 rounded-md transition-colors hover:bg-blue-600 hover:text-white"
               >
                 Home
               </a>
               <a
                 href="#about"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-gray-600 px-4 py-2 font-poppins rounded-md transition-colors hover:bg-blue-600 hover:text-white"
               >
                 About
               </a>
               <a
                 href="#technology"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-gray-600 px-4 py-2 font-poppins rounded-md transition-colors hover:bg-blue-600 hover:text-white"
               >
                 Technology
               </a>
               <a
                 href="#contact"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-gray-600 px-4 py-2 font-poppins rounded-md transition-colors hover:bg-blue-600 hover:text-white"
               >
                 Contact
               </a>
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors">
+              <button className="bg-blue-600 text-white px-6 py-2 font-poppins rounded-full hover:bg-blue-700 transition-colors">
                 Login
               </button>
             </div>
@@ -81,31 +81,31 @@ function App() {
           {/* Mobile Navigation */}
           {isMenuOpen && (
             <div className="md:hidden py-4 border-t">
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
                 <a
                   href="#home"
-                  className="text-gray-600 hover:text-blue-600 transition-colors"
+                  className="text-gray-600 px-4 py-2 rounded-md transition-colors hover:bg-blue-600 hover:text-white"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Home
                 </a>
                 <a
                   href="#about"
-                  className="text-gray-600 hover:text-blue-600 transition-colors"
+                  className="text-gray-600 px-4 py-2 rounded-md transition-colors hover:bg-blue-600 hover:text-white"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   About
                 </a>
                 <a
                   href="#technology"
-                  className="text-gray-600 hover:text-blue-600 transition-colors"
+                  className="text-gray-600 px-4 py-2 rounded-md transition-colors hover:bg-blue-600 hover:text-white"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Technology
                 </a>
                 <a
                   href="#contact"
-                  className="text-gray-600 hover:text-blue-600 transition-colors"
+                  className="text-gray-600 px-4 py-2 rounded-md transition-colors hover:bg-blue-600 hover:text-white"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Contact
@@ -253,13 +253,13 @@ function App() {
             <h2 className="text-3xl font-bold text-center font-poppins mb-2">
               Get in Touch
             </h2>
-            <div className="h-1 bg-black w-[20%] mb-3"></div>
+            <div className="h-1 bg-black w-[20%]"></div>
           </div>
-          <div className="flex justify-between items-center">
-            <div className="w-[70%]">
-              <img src={Contact} />
+          <div className="flex justify-center items-center">
+            <div className="">
+              <img src={Contact} className="max-w-full h-auto" alt="Contact" />
             </div>
-            <div className="w-[40%] mx-auto bg-gray-300 p-8 rounded-lg shadow-lg">
+            <div className="w-[40%] bg-gray-300 p-8 rounded-lg shadow-lg">
               <form className="space-y-6 font-poppins">
                 <div>
                   <label
@@ -271,7 +271,7 @@ function App() {
                   <input
                     type="text"
                     id="name"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                     placeholder="Your name"
                   />
                 </div>
@@ -285,7 +285,7 @@ function App() {
                   <input
                     type="email"
                     id="email"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                     placeholder="your@email.com"
                   />
                 </div>
@@ -299,13 +299,13 @@ function App() {
                   <textarea
                     id="message"
                     rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                     placeholder="Your message"
                   ></textarea>
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold"
                 >
                   Send Message
                 </button>
@@ -316,12 +316,12 @@ function App() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-gray-900 text-white py-8">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Thermometer className="w-6 h-6" />
-              <span className="font-bold text-xl">ThyroScan</span>
+              <Thermometer className="w-10 h-10" />
+              <span className="font-bold font-poppins text-3xl">ThyVerse</span>
             </div>
             <div className="text-gray-400">
               © 2024 ThyroScan. All rights reserved.
