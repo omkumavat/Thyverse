@@ -4,24 +4,48 @@ import { Building2, Phone, Users,X,Menu,Quote, Calendar, MapPin, Microscope, The
 import { useState } from 'react';
 import NavBar from '../Components/NavBar';
 import Footer from '../Components/Footer';
+import Sudeshna from "../Team/Sudeshna.png"
+import Suren from "../Team/Suren.png"
+import Pranav from "../Team/Pranav.png"
+import Nutan from "../Team/Nutan.png"
+import Devarti from "../Team/Devarti.png"
+import Lakshmi from "../Team/Lakshmi.png"
 function About() {
     const founders = [
         {
-          name: "Dr. Sarah Mitchell",
-          role: "Chief Executive Officer",
-          image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400",
+          name: "Dr. Sudeshna Ingale",
+          role: "Founder & CEO",
+          image: Sudeshna,
           testimonial: "Our mission at Thyright is to revolutionize thyroid disease diagnosis. By combining cutting-edge thermography with AI, we're making healthcare more accessible and efficient than ever before.",
         },
         {
-          name: "Dr. James Wilson",
-          role: "Chief Technology Officer",
-          image: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=400",
+          name: "Dr. Suren Kumar",
+          role: "Co-founder & COO",
+          image: Suren,
           testimonial: "Technology should serve humanity. At Thyright, we're developing AI solutions that not only diagnose but also help predict and manage thyroid conditions with unprecedented accuracy.",
         },
         {
-          name: "Dr. Emily Chen",
-          role: "Chief Operations Officer",
-          image: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=400",
+          name: "Devarti Mahakalkar",
+          role: "Chief Technology Officer",
+          image: Devarti,
+          testimonial: "Our innovative approach to thyroid screening is changing lives. By making the process non-invasive and accessible, we're breaking down barriers to early detection and treatment.",
+        },
+        {
+          name: "Nutan Bansode",
+          role: "Data Analytics Lead",
+          image: Nutan,
+          testimonial: "Our innovative approach to thyroid screening is changing lives. By making the process non-invasive and accessible, we're breaking down barriers to early detection and treatment.",
+        },
+        {
+          name: "Dr. Pranav Pawar",
+          role: "Hardware Lead",
+          image: Pranav,
+          testimonial: "Our innovative approach to thyroid screening is changing lives. By making the process non-invasive and accessible, we're breaking down barriers to early detection and treatment.",
+        },
+        {
+          name: "Dr. Lakshmi Dwivedi",
+          role: "Clinical associate",
+          image: Lakshmi,
           testimonial: "Our innovative approach to thyroid screening is changing lives. By making the process non-invasive and accessible, we're breaking down barriers to early detection and treatment.",
         },
       ];
