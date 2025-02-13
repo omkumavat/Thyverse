@@ -1,5 +1,5 @@
 import react from "react";
-import { Thermometer } from "lucide-react";
+import logo from "../Images/logo.png"
 const Footer=()=>{
     return(
         <>
@@ -7,7 +7,7 @@ const Footer=()=>{
                     <div className="container mx-auto px-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <Thermometer className="w-10 h-10" />
+                                <img src={logo} height={56} width={56}/>
                                 <span className="font-bold font-poppins text-3xl">ThyRight</span>
                             </div>
                             <div className="text-gray-400">

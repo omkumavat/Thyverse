@@ -86,10 +86,6 @@ const Home = () => {
                     viewport={{ once: false, amount: 0.2 }}
                     className="flex flex-col items-center"
                 >
-                    <h2 className="text-5xl font-bold font-poppins text-center mb-2">
-                        Our Vision & Mission
-                    </h2>
-                    <div className="h-2 bg-black w-[35%] mb-3"></div>
                 </motion.div>
 
                 <div className="grid md:grid-cols-2 gap-12">

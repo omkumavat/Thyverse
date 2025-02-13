@@ -12,31 +12,21 @@ import {
 const services = [
   {
     id: 1,
-    title: "Personalized Dashboard",
-    icon: <FaUserCircle className="text-blue-600" />,
-  },
-  {
-    id: 2,
-    title: "Book your AI-based thyroid scan",
-    icon: <FaMicroscope className="text-green-600" />,
-  },
-  {
-    id: 3,
     title: "Consult with a thyroid specialist",
     icon: <FaUserMd className="text-red-600" />,
   },
   {
-    id: 4,
+    id: 2,
     title: "Medication and lifestyle support",
     icon: <FaPills className="text-purple-600" />,
   },
   {
-    id: 5,
+    id: 3,
     title: "Community of thyroid warriors",
     icon: <FaUsers className="text-yellow-600" />,
   },
   {
-    id: 6,
+    id: 4,
     title: "Up-to-date research & health insights",
     icon: <FaBookOpen className="text-teal-600" />,
   },
@@ -44,7 +34,7 @@ const services = [
 
 const ServiceCard = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-8">
+    <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-8 p-8">
       {services.map((service, index) => (
         <motion.div
           key={service.id}
