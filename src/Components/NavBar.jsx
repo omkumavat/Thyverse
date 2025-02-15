@@ -1,10 +1,23 @@
 import React, { useState } from "react";
 import logo from "../Images/logo.png";
 import { X, Menu } from "lucide-react";
+import {logout} from'../store/authSlice';
+import authService from "../appwrite/Auth";
+import {useDispatch} from 'react-redux';
+import { useSelector } from "react-redux";
+import { useNavigate } from 'react-router-dom'
 
 const NavBar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const dispatch = useDispatch()
+    const logoutHandler = () => {
+        authService.logout().then(() => {
+            dispatch(logout())
+        })
+    }
 
+    const authStatus = useSelector((state) => state.auth.status)
+    const navigate = useNavigate()
     return (
         <>
             <nav className="bg-white mx-8 my-3 shadow-md fixed z-50 rounded-md w-[96%]">
@@ -44,12 +57,27 @@ const NavBar = () => {
                             >
                                 Contact
                             </a>
-                            <button
-                                onClick={() => (window.location.href = "/login")}
-                                className="bg-blue-600 text-white px-6 py-2 font-poppins rounded-full hover:bg-blue-700 transition-colors"
-                            >
-                                Login
-                            </button>
+                            {
+                                authStatus && (
+                                    <button
+                                    onClick={logoutHandler}
+                                    className="bg-blue-600 text-white px-6 py-2 font-poppins rounded-full hover:bg-blue-700 transition-colors"
+                                >
+                                    LogOut
+                                </button>
+                                )
+                            }
+                            {
+                                !authStatus && (
+                                    <button
+                                    onClick={() => (window.location.href = "/login")}
+                                    className="bg-blue-600 text-white px-6 py-2 font-poppins rounded-full hover:bg-blue-700 transition-colors"
+                                >
+                                    LogIn
+                                </button>
+                                )
+                            }
+                           
                         </div>
 
                         {/* Mobile menu button */}
