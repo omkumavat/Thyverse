@@ -76,7 +76,8 @@
 
 /* Animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -101,3 +102,11 @@
 .btn-secondary {
   @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
 }
+.recharts-wrapper {
+  transition: all 0.3s ease;
+}
+
+.recharts-surface {
+  overflow: visible;
+}
+

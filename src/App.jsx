@@ -6,7 +6,7 @@ import Home from "./Pages/Home";
 import About from "./Pages/About";
 import AuthForm from "./Components/LoginComponents/AuthForm";
 import authService from "./appwrite/Auth";
-
+import Dashboard from "./Components/DashBoardComponents/Dashboard";
 function App() {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -32,6 +32,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<About />} />
       <Route path="/login" element={<AuthForm />} />
+      <Route path="/dashboard" element={<Dashboard/>}></Route>
     </Routes>
   );
 }
