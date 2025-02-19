@@ -1,6 +1,6 @@
 import React from 'react';
 import  logo from '../Images/logo.png'
-import { Building2, Phone, Users,X,Menu,Quote, Calendar, MapPin, Microscope, ThermometerSun, Brain,Thermometer, Heart } from 'lucide-react';
+import { Building2, Phone, Users,X,Menu,Quote, Calendar, MapPin, Microscope, ThermometerSun, Brain,Thermometer, MailCheck,Heart } from 'lucide-react';
 import { useState } from 'react';
 import NavBar from '../Components/NavBar';
 import Footer from '../Components/Footer';
@@ -84,10 +84,10 @@ function About() {
         </div>
 
         {/* Company Info with 3D Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 lg:ml-60 gap-8 mb-16">
           {[
-            { icon: <Building2 className="w-8 h-8" />, title: "Company Size", value: "2-10 employees" },
-            { icon: <Phone className="w-8 h-8" />, title: "Contact", value: "+91 7875059509" },
+            // { icon: <Building2 className="w-8 h-8" />, title: "Company Size", value: "2-10 employees" },
+            { icon: <MailCheck className="w-8 h-8" />, title: "Contact", value: "thyright28@gmail.com" },
             { icon: <MapPin className="w-8 h-8" />, title: "Location", value: "Pune, Maharashtra" },
             { icon: <Calendar className="w-8 h-8" />, title: "Founded", value: "2023" },
           ].map((item, index) => (

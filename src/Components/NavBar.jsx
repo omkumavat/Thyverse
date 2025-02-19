@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import logo from "../Images/logo.png";
 import { X, Menu } from "lucide-react";
-import {logout} from'../store/authSlice';
+import { logout } from '../store/authSlice';
 import authService from "../appwrite/Auth";
-import {useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom'
 
@@ -26,9 +26,11 @@ const NavBar = () => {
                         {/* Logo */}
                         <div className="flex items-center gap-2">
                             <img src={logo} width={60} height={60} alt="ThyRight Logo" />
-                            <h1 className="text-3xl font-bold text-gray-800 font-poppins">
+                            <h1 className="text-4xl mt-2 font-bold text-gray-800 font-qenbay">
                                 ThyRight
                             </h1>
+
+
                         </div>
 
                         {/* Desktop Navigation */}
@@ -59,25 +61,35 @@ const NavBar = () => {
                             </a>
                             {
                                 authStatus && (
+                                    <a
+                                        href="/dashboard"
+                                        className="text-gray-600 px-4 py-2 font-poppins rounded-md transition-colors hover:bg-blue-600 hover:text-white"
+                                    >
+                                        DashBoard
+                                    </a>
+                                )
+                            }
+                            {
+                                authStatus && (
                                     <button
-                                    onClick={logoutHandler}
-                                    className="bg-blue-600 text-white px-6 py-2 font-poppins rounded-full hover:bg-blue-700 transition-colors"
-                                >
-                                    LogOut
-                                </button>
+                                        onClick={logoutHandler}
+                                        className="bg-blue-600 text-white px-6 py-2 font-poppins rounded-full hover:bg-blue-700 transition-colors"
+                                    >
+                                        LogOut
+                                    </button>
                                 )
                             }
                             {
                                 !authStatus && (
                                     <button
-                                    onClick={() => (window.location.href = "/login")}
-                                    className="bg-blue-600 text-white px-6 py-2 font-poppins rounded-full hover:bg-blue-700 transition-colors"
-                                >
-                                    LogIn
-                                </button>
+                                        onClick={() => (window.location.href = "/login")}
+                                        className="bg-blue-600 text-white px-6 py-2 font-poppins rounded-full hover:bg-blue-700 transition-colors"
+                                    >
+                                        LogIn
+                                    </button>
                                 )
                             }
-                           
+
                         </div>
 
                         {/* Mobile menu button */}

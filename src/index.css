@@ -110,3 +110,41 @@
   overflow: visible;
 }
 
+@font-face {
+  font-family: 'Queensby';
+  src: url('../public/fonts/Queensby.otf') format('opentype'); /* Adjust the path if needed */
+  font-weight: normal;
+  font-style: normal;
+} 
+
+
+@font-face {
+  font-family: 'TheQueen';
+  src: url('../public/fonts/TheQueen.ttf') format('truetype'); /* Adjust the path if needed */
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Qenbay';
+  src: url('../public/fonts/Qenbay.woff') format('woff'); /* Correct the format */
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+
+/* Optional class for easy usage */
+.font-queensby {
+  font-family: 'Queensby', sans-serif;
+}
+
+.font-thequeen {
+  font-family: 'TheQueen', sans-serif;
+}
+
+.font-qenbay {
+  font-family: 'Qenbay', sans-serif;
+}
+
+

@@ -1,69 +1,70 @@
+import { Client, Account, OAuthProvider } from "appwrite";
 import conf from '../conf/conf.js';
-import { Client, Account } from "appwrite";
-
 
 export class AuthService {
     client = new Client();
     account;
 
     constructor() {
-       
         this.client
             .setEndpoint(conf.appWriteUrl)
             .setProject(conf.appWriteProjectId);
         this.account = new Account(this.client);
-            
     }
 
     async createAccount({ email, password, fullName }) {
         try {
-          // Passing an empty string to auto-generate the user ID (if your server supports it)
-          const userAccount = await this.account.create("unique()", email, password, fullName);
-          if (userAccount) {
-            return this.login({ email, password });
-          } else {
-            return userAccount;
-          }
+            // Attempt to create a new account
+            const userAccount = await this.account.create("unique()", email, password, fullName);
+            return userAccount; // Return the created user account or handle differently if needed
         } catch (error) {
-          console.log(error);
-          throw error;
+            console.error("Error creating account:", error);
+            throw error;
         }
-      }
-      
-      
-      async login({ email, password }) {
+    }
+
+    async login({ email, password }) {
         try {
-          // Option 1: Try createEmailSession first
-          return await this.account.createEmailPasswordSession(email, password);
+            // Try to create a session using email and password
+            return await this.account.createEmailPasswordSession(email, password);
         } catch (error) {
-          console.log("createEmailSession failed, trying createSession", error);
-          // Option 2: Fall back to createSession
-          return await this.account.createSession(email, password);
+            console.error("Failed to create email session, error:", error);
+            throw error;
         }
-      }
-      
+    }
 
     async getCurrentUser() {
         try {
             return await this.account.get();
         } catch (error) {
-            console.log("Appwrite serive :: getCurrentUser :: error", error);
+            console.error("Error fetching current user:", error);
+            return null;
         }
-
-        return null;
     }
 
     async logout() {
-
         try {
             await this.account.deleteSessions();
         } catch (error) {
-            console.log("Appwrite serive :: logout :: error", error);
+            console.error("Error logging out:", error);
         }
     }
+
+
+    async loginWithGoogle() {
+      if (!this.account) {
+          console.error("Appwrite account is not initialized.");
+          return;
+      }
+  
+      try {
+          // Redirects user to Google login page
+          return await this.account.createOAuth2Session(OAuthProvider.Google);
+      } catch (error) {
+          console.error("Google login failed:", error);
+      }
+  }
 }
 
 const authService = new AuthService();
-
-export default authService
-
+export default authService;

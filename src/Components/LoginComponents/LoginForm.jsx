@@ -4,6 +4,7 @@ import authService from '../../appwrite/Auth';
 import { useDispatch } from 'react-redux';
 import {login as authLogin} from '../../store/authSlice'
 import { useNavigate } from 'react-router-dom';
+
 const LoginForm = ({ onToggleAuth }) => {
   // State hooks to store form data and error message
   const [email, setEmail] = useState("");
@@ -101,6 +102,13 @@ const LoginForm = ({ onToggleAuth }) => {
           className="w-full bg-orange-500 text-white py-4 px-6 text-lg rounded-lg hover:bg-orange-600 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-lg"
         >
           Sign In
+        </button>
+
+        <button
+          onClick={authService.loginWithGoogle}
+          className="w-full bg-blue-500 text-white py-4 px-6 text-lg rounded-lg hover:bg-orange-600 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-lg"
+        >
+          LogIn With Google
         </button>
 
         <div className="text-center mt-6">
