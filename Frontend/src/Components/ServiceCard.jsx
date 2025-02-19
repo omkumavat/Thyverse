@@ -1,8 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import {
-  FaUserCircle,
-  FaMicroscope,
   FaUserMd,
   FaPills,
   FaUsers,
@@ -34,20 +32,20 @@ const services = [
 
 const ServiceCard = () => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
       {services.map((service, index) => (
         <motion.div
           key={service.id}
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: index * 0.2 }}
+          transition={{ duration: 0.5, delay: index * 0.15 }}
           viewport={{ once: false, amount: 0.2 }}
-          className="p-4 bg-gray-50 font-poppins rounded-3xl text-center hover:scale-105 border border-gray-300 hover:shadow-md hover:shadow-white transition duration-300 flex flex-col items-center w-[300px] h-[250px] sm:w-[350px] sm:h-[280px]"
+          className="p-4 bg-gray-50 font-poppins rounded-2xl text-center hover:scale-105 border border-gray-300 hover:shadow-lg transition duration-300 flex flex-col justify-center items-center w-[220px] h-[220px] sm:w-[250px] sm:h-[230px]"
         >
           {React.cloneElement(service.icon, {
-            className: `${service.icon.props.className} text-5xl`,
+            className: `${service.icon.props.className} text-4xl`,
           })}
-          <h3 className="text-2xl font-bold text-gray-800 mt-6">
+          <h3 className="text-xl font-semibold text-gray-800 mt-4 text-center">
             {service.title}
           </h3>
         </motion.div>

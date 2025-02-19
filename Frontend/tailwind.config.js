@@ -6,6 +6,7 @@ export default {
     extend: {
       fontFamily: {
         qenbay: ["Qenbay", "sans-serif"], // Custom font
+        poppins: ["Poppins", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -1,40 +1,47 @@
 import React, { useState } from 'react';
 import { Lock, Mail, UserPlus } from 'lucide-react';
-import authService from '../../appwrite/Auth';
 import { useDispatch } from 'react-redux';
-import {login as authLogin} from '../../store/authSlice'
+import { login as authLogin } from '../../store/authSlice'
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthProvider';
+import axios from 'axios';
 
 const LoginForm = ({ onToggleAuth }) => {
-  // State hooks to store form data and error message
+ const {login}=useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const dispatch =useDispatch();
-  const navigate=useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // Function to perform login (assuming authService, dispatch, and navigate are defined elsewhere)
-  const login = async () => {
-    setError("");
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const session = await authService.login({ email, password });
-      if (session) {
-        const userData = await authService.getCurrentUser();
-        if (userData) {
-          dispatch(authLogin(userData));
-        }
-        navigate("/");
+      // Send login request along with email and password
+      const res = await axios.post('http://localhost:4000/server/user/login-user', { email, password });
+
+      if (res.data.success) {
+        // Assuming your response includes user data in res.data.user
+        const userData = res.data.user;
+
+        // Store the user in Redux
+        dispatch(authLogin(userData));
+
+        login(userData)
+
+        // Navigate to a protected route (e.g., dashboard)
+        navigate('/');
+      } else {
+        // Handle login failure, for example by setting an error message
+        setError(res.data.message || 'Login failed');
       }
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      console.error(error);
+      setError("An error occurred, please try again");
     }
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    login();
-  };
 
   return (
     <div className="p-12 md:w-3/5 relative h-screen md:h-auto overflow-y-auto">
@@ -104,12 +111,12 @@ const LoginForm = ({ onToggleAuth }) => {
           Sign In
         </button>
 
-        <button
+        {/* <button
           onClick={authService.loginWithGoogle}
           className="w-full bg-blue-500 text-white py-4 px-6 text-lg rounded-lg hover:bg-orange-600 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-lg"
         >
           LogIn With Google
-        </button>
+        </button> */}
 
         <div className="text-center mt-6">
           <button

@@ -1,38 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Routes, Route } from "react-router-dom";
-import { useDispatch } from 'react-redux';
-import { login, logout } from "./store/authSlice";
 import Home from "./Pages/Home";
 import About from "./Pages/About";
 import AuthForm from "./Components/LoginComponents/AuthForm";
-import authService from "./appwrite/Auth";
 import Dashboard from "./Components/DashBoardComponents/Dashboard";
-function App() {
-  const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
-  
-  useEffect(() => {
-    authService.getCurrentUser()
-      .then((userData) => {
-        if (userData) {
-          dispatch(login({ userData }));
-        } else {
-          dispatch(logout());
-        }
-      })
-      .finally(() => setLoading(false));
-  }, [dispatch]);
+import { useAuth } from "./Context/AuthProvider";
+import ProtectedRouteForLogin from "./Context/ProtectedRoute";
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+function App() {
+  const { currentUser } = useAuth();
+  console.log(currentUser);
 
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<About />} />
-      <Route path="/login" element={<AuthForm />} />
-      <Route path="/dashboard" element={<Dashboard/>}></Route>
+      <Route
+        path="/login"
+        element={
+          <ProtectedRouteForLogin>
+            <AuthForm />
+          </ProtectedRouteForLogin>
+        }
+      />
+      <Route path="/dashboard" element={<Dashboard />} />
     </Routes>
   );
 }

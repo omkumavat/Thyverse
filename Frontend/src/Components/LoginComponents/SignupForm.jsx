@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Lock, Mail, User } from "lucide-react";
-import authService from "../../appwrite/Auth";
-import { login } from "../../store/authSlice";
+import axios from "axios"; // Make sure axios is imported
+import { login as authLogin } from "../../store/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../Context/AuthProvider";
 
 const SignupForm = ({ onToggleAuth }) => {
+  const {login} =useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -20,25 +22,40 @@ const SignupForm = ({ onToggleAuth }) => {
     e.preventDefault();
     setError("");
     try {
-      // Construct data object from form state
-      const data = { fullName, email, password };
-      const userData = await authService.createAccount(data);
-      if (userData) {
-        const currentUser = await authService.getCurrentUser();
-        if (currentUser) {
-          dispatch(login(currentUser));
+      const res = await axios.post(
+        "http://localhost:4000/server/user/signup-user",
+        {
+          name: fullName,
+          email,
+          password,
         }
+      );
+
+      // Assuming your API returns a success flag and a user object
+      if (res.data.success) {
+        const userData = res.data.user;
+        
+        dispatch(authLogin(userData));
+
+       login(userData);
+
+        // Navigate to a protected route, e.g., a dashboard
         navigate("/");
+      } else {
+        setError(res.data.message || "Signup failed, please try again.");
       }
     } catch (error) {
-      setError(error.message);
+      console.error(error);
+      setError("An error occurred, please try again.");
     }
   };
 
   return (
     <div className="p-12 md:w-3/5 relative h-screen md:h-auto overflow-y-auto">
       <div className="text-center mb-10 font-poppins">
-        <h2 className="text-4xl font-bold text-gray-800 mb-3">Create Account</h2>
+        <h2 className="text-4xl font-bold text-gray-800 mb-3">
+          Create Account
+        </h2>
         <p className="text-gray-600 text-lg">
           Join us to start your healthcare journey
         </p>
