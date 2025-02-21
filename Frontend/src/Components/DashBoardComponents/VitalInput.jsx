@@ -13,6 +13,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+
 function VitalInput() {
   const [vitals, setVitals] = useState({
     systolic: "",
@@ -30,6 +31,7 @@ function VitalInput() {
     console.log("Submitted vitals:", vitals);
     // Send data to backend here
   };
+
   const data = [
     { time: "10:00", systolic: 120, diastolic: 80 },
     { time: "10:30", systolic: 118, diastolic: 78 },
@@ -37,184 +39,200 @@ function VitalInput() {
     { time: "11:30", systolic: 121, diastolic: 81 },
     { time: "12:00", systolic: 119, diastolic: 79 },
   ];
+
   return (
-    <div className="bg-gradient-to-r from-orange-500 to-orange-300">
-      <div>
-        <NavBar />
-      </div>
-      <div className="min-h-screen  ">
-        {/* Main div */}
-        <div className="flex">
-          {/* left part */}
-          <div className="mt-4 overflow-clip">
-            <main className="w-[90%] mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen flex flex-col justify-center">
-              <header className="bg-white shadow-sm flex justify-center items-center">
-                <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center space-x-2">
-                  <Activity className="h-8 w-8 text-blue-600" />
-                  <h1 className="text-2xl font-poppins font-bold text-gray-900">
-                    Vital Signs Monitor
-                  </h1>
-                </div>
-              </header>
-              <div className=" rounded-md">
-                {/* Form Section */}
-                <div className="bg-white rounded-md shadow-lg p-6 font-poppins ">
-                  <div>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      {/* Blood Pressure Section */}
-                      <div className="flex justify-evenly items-center gap-x-6 ">
-                        <div className="">
-                          <img src={Bp} />
-                        </div>
-                        <div className="flex flex-col justify-center items-center gap-y-4 bg-gray-400 p-2 !rounded-md">
-                          <div className="flex items-center space-x-2">
-                            <Heart className="h-6 w-6 text-red-500" />
-                            <h2 className="text-xl font-semibold text-gray-900">
-                              Blood Pressure
-                            </h2>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4 h-[100px]">
-                            <div>
-                              <label
-                                htmlFor="systolic"
-                                className="block text-lg font-medium text-gray-700"
-                              >
-                                Systolic (mmHg)
-                              </label>
-                              <input
-                                type="number"
-                                id="systolic"
-                                value={vitals.systolic}
-                                onChange={handleInputChange}
-                                className="mt-1 block w-full h-8 p-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm"
-                                placeholder="120"
-                                required
-                              />
-                            </div>
-                            <div>
-                              <label
-                                htmlFor="diastolic"
-                                className="block text-lg font-medium text-gray-700"
-                              >
-                                Diastolic (mmHg)
-                              </label>
-                              <input
-                                type="number"
-                                id="diastolic"
-                                value={vitals.diastolic}
-                                onChange={handleInputChange}
-                                className="mt-1 block w-full h-8 p-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm"
-                                placeholder="80"
-                                required
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Pulse Section */}
-
-                      <div className="flex justify-evenly items-center gap-x-6 ">
-                        <div className="flex flex-col justify-center items-center rounded-md h-[150px] bg-gray-400 p-4">
-                          <div className="flex items-center space-x-2">
-                            <Activity className="h-6 w-6 text-red-500" />
-                            <h2 className="text-xl font-semibold text-gray-900">
-                              Pulse Rate
-                            </h2>
-                          </div>
-                          <div>
-                            <label
-                              htmlFor="pulse"
-                              className="block text-lg font-medium text-gray-700"
-                            >
-                              Beats per minute (BPM)
-                            </label>
-                            <input
-                              type="number"
-                              id="pulse"
-                              value={vitals.pulse}
-                              onChange={handleInputChange}
-                              className="mt-1 block w-full h-8 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm"
-                              placeholder="72"
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div className="w-[50%]">
-                          <img src={Pulse} height={150} />
-                        </div>
-                      </div>
-                      <div className="flex justify-center items-center">
-                        <button
-                          type="submit"
-                          className="w-fit flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        >
-                          Save Vitals
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-
-                {/* Information Section */}
-              </div>
-            </main>
+    <div className="bg-gradient-to-br from-orange-600 via-orange-500 to-orange-300 min-h-screen text-gray-100 font-sans">
+      <NavBar />
+      
+      <div className="container mx-auto px-4 py-8">
+        {/* <header className="bg-gray-900 bg-opacity-95 shadow-xl rounded-xl mb-8 border border-indigo-900">
+          <div className="flex items-center justify-center space-x-3 py-5">
+            <Activity className="h-9 w-9 text-orange-400" />
+            <h1 className="text-2xl md:text-3xl font-extrabold text-gray-50 tracking-tight">
+              Vital Signs Monitor
+            </h1>
           </div>
-          {/* right part */}
-          <div className="flex flex-col justify-center items-center gap-y-5">
-            {/* upper part */}
-            <div className="">
-              <div className=" font-poppins w-full">
-                <div className="bg-white rounded-md shadow-lg p-6">
-                  <div className="flex items-center space-x-2 mb-4">
-                    <AlertCircle className="h-6 w-6 text-blue-600" />
-                    <h2 className="text-xl font-semibold text-gray-900">
-                      Normal Ranges
-                    </h2>
+        </header> */}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 font-poppins gap-8 mt-16">
+          {/* Main Content Area */}
+          <div className="lg:col-span-2">
+            <div className="bg-gray-900 bg-opacity-90 rounded-xl shadow-2xl p-6 border border-indigo-900 hover:shadow-orange-500/20 transition-shadow duration-300">
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Blood Pressure Section */}
+                <div className="flex flex-col md:flex-row items-center gap-6 p-5 bg-gray-800 bg-opacity-60 rounded-xl border border-indigo-800">
+                  <div className="w-full md:w-1/3 flex justify-center">
+                    <img src={Bp} alt="Blood Pressure" className="h-28 md:h-36 object-contain" />
                   </div>
-                  <div className="space-y-4">
-                    <div className="border-l-4 border-blue-500 pl-4">
-                      <h3 className="text-lg font-medium text-gray-900">
+                  <div className="w-full md:w-2/3 bg-indigo-950 bg-opacity-80 p-5 rounded-lg shadow-md border border-indigo-800">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <Heart className="h-6 w-6 text-orange-400" />
+                      <h2 className="text-xl font-semibold text-gray-50">
                         Blood Pressure
-                      </h3>
-                      <p className="text-gray-600">
-                        Normal range: 90/60 mmHg to 120/80 mmHg
-                      </p>
+                      </h2>
                     </div>
-                    <div className="border-l-4 border-blue-500 pl-4">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        Pulse Rate
-                      </h3>
-                      <p className="text-gray-600">
-                        Normal range: 60-100 beats per minute
-                      </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div>
+                        <label
+                          htmlFor="systolic"
+                          className="block text-sm font-medium text-gray-300 tracking-wide"
+                        >
+                          Systolic (mmHg)
+                        </label>
+                        <input
+                          type="number"
+                          id="systolic"
+                          value={vitals.systolic}
+                          onChange={handleInputChange}
+                          className="mt-2 block w-full px-4 py-2 bg-gray-800 border border-indigo-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-gray-100 sm:text-sm transition-all duration-200"
+                          placeholder="120"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="diastolic"
+                          className="block text-sm font-medium text-gray-300 tracking-wide"
+                        >
+                          Diastolic (mmHg)
+                        </label>
+                        <input
+                          type="number"
+                          id="diastolic"
+                          value={vitals.diastolic}
+                          onChange={handleInputChange}
+                          className="mt-2 block w-full px-4 py-2 bg-gray-800 border border-indigo-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-gray-100 sm:text-sm transition-all duration-200"
+                          placeholder="80"
+                          required
+                        />
+                      </div>
                     </div>
                   </div>
+                </div>
+
+                {/* Pulse Section */}
+                <div className="flex flex-col md:flex-row items-center gap-6 p-5 bg-gray-800 bg-opacity-60 rounded-xl border border-indigo-800">
+                  <div className="order-2 md:order-1 w-full md:w-2/3 bg-indigo-950 bg-opacity-80 p-5 rounded-lg shadow-md border border-indigo-800">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <Activity className="h-6 w-6 text-orange-400" />
+                      <h2 className="text-xl font-semibold text-gray-50">
+                        Pulse Rate
+                      </h2>
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="pulse"
+                        className="block text-sm font-medium text-gray-300 tracking-wide"
+                      >
+                        Beats per minute (BPM)
+                      </label>
+                      <input
+                        type="number"
+                        id="pulse"
+                        value={vitals.pulse}
+                        onChange={handleInputChange}
+                        className="mt-2 block w-full px-4 py-2 bg-gray-800 border border-indigo-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-gray-100 sm:text-sm transition-all duration-200"
+                        placeholder="72"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="order-1 md:order-2 w-full md:w-1/3 flex justify-center">
+                    <img src={Pulse} alt="Pulse" className="h-28 md:h-36 object-contain" />
+                  </div>
+                </div>
+
+                <div className="flex justify-center pt-6">
+                  <button
+                    type="submit"
+                    className="px-8 py-3 bg-gradient-to-r from-purple-800 to-purple-600 text-white font-semibold rounded-lg shadow-md hover:from-purple-700 hover:to-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400 transition-all duration-300"
+                  >
+                    Save Vitals
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-8">
+            {/* Normal Ranges Card */}
+            <div className="bg-gray-900 bg-opacity-90 rounded-xl shadow-2xl p-6 border border-indigo-900 hover:shadow-orange-500/20 transition-shadow duration-300">
+              <div className="flex items-center space-x-3 mb-5">
+                <AlertCircle className="h-6 w-6 text-orange-400" />
+                <h2 className="text-xl font-semibold text-gray-50">
+                  Normal Ranges
+                </h2>
+              </div>
+              <div className="space-y-5">
+                <div className="border-l-4 border-orange-400 pl-4">
+                  <h3 className="text-sm font-medium text-gray-200">
+                    Blood Pressure
+                  </h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    Normal range: 90/60 mmHg to 120/80 mmHg
+                  </p>
+                </div>
+                <div className="border-l-4 border-orange-400 pl-4">
+                  <h3 className="text-sm font-medium text-gray-200">
+                    Pulse Rate
+                  </h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    Normal range: 60-100 beats per minute
+                  </p>
                 </div>
               </div>
             </div>
-            {/* lower part */}
-            <div>
-              <div className="bg-white rounded-md shadow-lg p-6 ">
-                <h2 className="text-xl font-semibold mb-4">Vital Trends</h2>
-                <ResponsiveContainer height={300} width={400}>
+
+            {/* Vital Trends Chart */}
+            <div className="bg-gray-900 bg-opacity-90 rounded-xl shadow-2xl p-6 border border-indigo-900 hover:shadow-orange-500/20 transition-shadow duration-300">
+              <h2 className="text-xl font-semibold mb-5 text-gray-50">Vital Trends</h2>
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
+                    <CartesianGrid strokeDasharray="4 4" stroke="#4B5563" />
+                    <XAxis 
+                      dataKey="time" 
+                      tick={{ fontSize: 12, fill: '#D1D5DB' }}
+                      tickMargin={10}
+                      stroke="#6B7280"
+                    />
+                    <YAxis 
+                      tick={{ fontSize: 12, fill: '#D1D5DB' }}
+                      tickMargin={10}
+                      stroke="#6B7280"
+                    />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: 'rgba(31, 41, 55, 0.95)',
+                        border: '1px solid #6B7280',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        color: '#F3F4F6',
+                      }}
+                    />
+                    <Legend 
+                      verticalAlign="bottom" 
+                      height={36}
+                      wrapperStyle={{ fontSize: '12px', color: '#E5E7EB' }}
+                    />
                     <Line
                       type="monotone"
                       dataKey="systolic"
-                      stroke="#8884d8"
-                      strokeWidth={2}
+                      name="Systolic"
+                      stroke="#F97316"
+                      strokeWidth={2.5}
+                      dot={{ r: 5, fill: '#F97316' }}
+                      activeDot={{ r: 7, fill: '#FDBA74' }}
                     />
                     <Line
                       type="monotone"
                       dataKey="diastolic"
-                      stroke="#82ca9d"
-                      strokeWidth={2}
+                      name="Diastolic"
+                      stroke="#FB923C"
+                      strokeWidth={2.5}
+                      dot={{ r: 5, fill: '#FB923C' }}
+                      activeDot={{ r: 7, fill: '#FED7AA' }}
                     />
                   </LineChart>
                 </ResponsiveContainer>

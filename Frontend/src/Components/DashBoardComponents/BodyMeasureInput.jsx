@@ -143,7 +143,7 @@ export default function BodyMeasureInput() {
                       className={`flex-1 py-3 px-6 rounded-lg transition-all duration-300 ${
                         gender === "female" 
                           ? "bg-orange-500 text-white" 
-                          : "bg-[#000042] text-white/70 hover:bg-[#000042]/80"
+                          : "bg-[#000042] text-white/70 x"
                       }`}
                       onClick={() => {
                         setGender("female");
