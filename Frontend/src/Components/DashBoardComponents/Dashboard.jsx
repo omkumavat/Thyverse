@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Activity,
@@ -7,6 +7,7 @@ import {
   Heart,
   FlaskRound as Flask,
 } from "lucide-react";
+import axios from "axios";
 import {
   LineChart,
   Line,
@@ -22,27 +23,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useNavigate } from "react-router-dom";
-const vitalsData = [
-  { name: "Mon", bp: 120, pulse: 72 },
-  { name: "Tue", bp: 125, pulse: 75 },
-  { name: "Wed", bp: 118, pulse: 70 },
-  { name: "Thu", bp: 122, pulse: 73 },
-  { name: "Fri", bp: 121, pulse: 71 },
-];
+import { useAuth } from "../../Context/AuthProvider";
 
-const medicationData = [
-  { name: "Metformin", value: 35 },
-  { name: "Lisinopril", value: 25 },
-  { name: "Aspirin", value: 20 },
-  { name: "Vitamin D", value: 20 },
-];
-
-const bodyMeasurements = [
-  { name: "Weight", value: 75 },
-  { name: "Height", value: 175 },
-  { name: "BMI", value: 24.5 },
-  { name: "Body Fat %", value: 22 },
-];
+const COLORS = ["#FF9F43", "#1B2B65", "#FF7A00", "#324185"];
 
 const thyroidData = [
   { name: "TSH", value: 2.5, range: "0.4-4.0" },
@@ -50,10 +33,114 @@ const thyroidData = [
   { name: "T3", value: 3.1, range: "2.3-4.2" },
 ];
 
-const COLORS = ["#FF9F43", "#1B2B65", "#FF7A00", "#324185"];
-
 function Dashboard() {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
+  // State variables for data fetched from the API
+  const [vitals, setVitals] = useState([]);
+  const [medications, setMedications] = useState([]);
+  const [bodyMeasures, setBodyMeasures] = useState({});
+  const [diastolic,setDiastolic]=useState([]);
+  const [sistolic,setSistolic]=useState([]);
+
+  // Fetch data when currentUser is available
+  useEffect(() => {
+    if (currentUser) {
+      getBodyMeasures(currentUser);
+      getVitals(currentUser);
+      fetchMediForGraph(currentUser);
+    }
+  }, [currentUser]);
+
+  // Fetch Body Measurements and update state
+  async function getBodyMeasures(currentUser) {
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/server/dashuser/get-body-measures/${currentUser._id}`
+      );
+      if (response.data.success) {
+        const data = response.data;
+        setBodyMeasures({
+          height: data.height,
+          weight: data.weight,
+          bodyFat: data.bodyFat,
+          bmi: data.bmi,
+        });
+        // Optionally update BMI category or calculate BMR here
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Fetch medication data for the graph and update state
+  async function fetchMediForGraph(currentUser) {
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/server/dashuser/get-medi-graph/${currentUser._id}`
+      );
+      const data = response.data;
+      // Assuming API returns an object like { names: [...], dosages: [...] }
+      const medData = data.names.map((name, index) => ({
+        name,
+        value: data.dosages[index],
+      }));
+      setMedications(medData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Fetch vitals data and update state
+  async function getVitals(currentUser) {
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/server/dashuser/get-vitals/${currentUser._id}`
+      );
+      if (response.data.success) {
+        // Assuming the API returns a vitals array like:
+        // [{ name: "Mon", bp: 120, pulse: 72 }, ...]
+        console.log(response.data.systolic);
+        
+        setSistolic(response.data.systolic);
+        setDiastolic(response.data.diastolic);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Transform the fetched body measures into an array for the BarChart
+  const displayedBodyMeasures =
+    Object.keys(bodyMeasures).length > 0
+      ? [
+          { name: "Weight", value: bodyMeasures.weight },
+          { name: "Height", value: bodyMeasures.height },
+          { name: "BMI", value: bodyMeasures.bmi },
+          { name: "Body Fat %", value: bodyMeasures.bodyFat },
+        ]
+      : [];
+
+  // If no data is fetched yet, you can fall back to defaults (or show a loading state)
+  const displayedVitals = [
+          { name: "Mon", sistolic: sistolic[0], diastolic: diastolic[0] },
+          { name: "Tue", sistolic: sistolic[1], diastolic: diastolic[1] },
+          { name: "Wed", sistolic: sistolic[2], diastolic: diastolic[2] },
+          { name: "Thu", sistolic: sistolic[3], diastolic: diastolic[3] },
+          { name: "Fri", sistolic: sistolic[4], diastolic: diastolic[4] },
+        ];
+
+  const displayedMedications =
+    medications.length > 0
+      ? medications
+      : [
+          { name: "Metformin", value: 35 },
+          { name: "Lisinopril", value: 25 },
+          { name: "Aspirin", value: 20 },
+          { name: "Vitamin D", value: 20 },
+        ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -63,8 +150,18 @@ function Dashboard() {
           <p className="text-orange-300">John Doe - ID: 12345</p>
         </div>
         <div className="flex items-center gap-x-4 text-xl font-bold font-poppins">
-        <p onClick={() => navigate("/dashboard/vitalinput")} className="cursor-pointer">My Vitals</p>
-        <p onClick={() => navigate("/dashboard/medication")} className="cursor-pointer">My Medications</p>
+          <p
+            onClick={() => navigate("/dashboard/vitalinput")}
+            className="cursor-pointer"
+          >
+            My Vitals
+          </p>
+          <p
+            onClick={() => navigate("/dashboard/medication")}
+            className="cursor-pointer"
+          >
+            My Medications
+          </p>
         </div>
       </header>
 
@@ -81,13 +178,13 @@ function Dashboard() {
             <h2 className="text-xl font-semibold text-[#1B2B65]">Vitals</h2>
           </div>
           <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={vitalsData}>
+            <LineChart data={displayedVitals}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="bp" stroke="#FF9F43" />
-              <Line type="monotone" dataKey="pulse" stroke="#1B2B65" />
+              <Line type="monotone" dataKey="sistolic" stroke="#FF9F43" />
+              <Line type="monotone" dataKey="diastolic" stroke="#1B2B65" />
             </LineChart>
           </ResponsiveContainer>
         </motion.div>
@@ -108,13 +205,13 @@ function Dashboard() {
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
-                data={medicationData}
+                data={displayedMedications}
                 innerRadius={60}
                 outerRadius={80}
                 paddingAngle={5}
                 dataKey="value"
               >
-                {medicationData.map((entry, index) => (
+                {displayedMedications.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
@@ -140,7 +237,7 @@ function Dashboard() {
             </h2>
           </div>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={bodyMeasurements}>
+            <BarChart data={displayedBodyMeasures}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
@@ -150,7 +247,7 @@ function Dashboard() {
           </ResponsiveContainer>
         </motion.div>
 
-        {/* Thyroid Panel Card */}
+        {/* Thyroid Panel Card (static data) */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -164,14 +261,15 @@ function Dashboard() {
             </h2>
           </div>
           <div className="space-y-4">
-            {thyroidData.map((item, index) => (
-              <div
-                key={item.name}
-                className="flex items-center justify-between"
-              >
-                <span className="text-[#1B2B65] font-medium">{item.name}</span>
+            {thyroidData.map((item) => (
+              <div key={item.name} className="flex items-center justify-between">
+                <span className="text-[#1B2B65] font-medium">
+                  {item.name}
+                </span>
                 <div className="flex items-center gap-4">
-                  <span className="text-[#FF9F43] font-bold">{item.value}</span>
+                  <span className="text-[#FF9F43] font-bold">
+                    {item.value}
+                  </span>
                   <span className="text-gray-500 text-sm">
                     Range: {item.range}
                   </span>
