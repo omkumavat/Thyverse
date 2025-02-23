@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Heart, Activity, AlertCircle } from "lucide-react";
 import NavBar from "../NavBar";
 import Pulse from "../../Images/Pulse.gif";
 import Bp from "../../Images/Bp.png";
+import axios from "axios";
+import { Toaster, toast } from 'react-hot-toast';
 import {
   LineChart,
   Line,
@@ -13,8 +15,12 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useAuth } from "../../Context/AuthProvider";
 
 function VitalInput() {
+  const {currentUser}=useAuth();
+  const [systolicArr,setsystolicArr]=useState([]);
+  const [diastolicArr,setdiastolicArr]=useState([]);
   const [vitals, setVitals] = useState({
     systolic: "",
     diastolic: "",
@@ -26,33 +32,71 @@ function VitalInput() {
     setVitals((prevVitals) => ({ ...prevVitals, [id]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log("Submitted vitals:", vitals);
-    // Send data to backend here
+
+    if((vitals.systolic==="" && vitals.diastolic!=="") || (vitals.systolic!=="" && vitals.diastolic==="")){
+      toast.error('Please fill both systolic and diastolic fields');
+    }
+    try {
+      if(currentUser){
+        const response = await axios.post(`http://localhost:4000/server/dashuser/add-vitals/${currentUser._id}`,vitals);
+        if(response.data.success){
+          toast.success("Vitals data saved successfuly.. !");
+          setVitals({
+            systolic: "",
+            diastolic: "",
+            pulse:(response.data.pulse) 
+          })
+          setsystolicArr(response.data.systolic);
+          setdiastolicArr(response.data.diastolic);
+        }else{
+          toast.error("Error saving vitals data.. !");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Error saving vitals data.. !");
+    }
   };
 
+  async function getVitals() {
+    try {
+      if(currentUser){
+        const response = await axios.get(`http://localhost:4000/server/dashuser/get-vitals/${currentUser._id}`);
+        if(response.data.success){
+          console.log(response.data.pulse);
+          setVitals({
+            pulse:(response.data.pulse) 
+          })
+          
+          setsystolicArr(response.data.systolic);
+          setdiastolicArr(response.data.diastolic);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  useEffect(() => {
+    getVitals();
+    console.log(vitals.pulse)
+  },[])
+
   const data = [
-    { time: "10:00", systolic: 120, diastolic: 80 },
-    { time: "10:30", systolic: 118, diastolic: 78 },
-    { time: "11:00", systolic: 122, diastolic: 82 },
-    { time: "11:30", systolic: 121, diastolic: 81 },
-    { time: "12:00", systolic: 119, diastolic: 79 },
+    { time: "10:00", systolic: systolicArr[0], diastolic: diastolicArr[0] },
+    { time: "10:30", systolic: systolicArr[1], diastolic: diastolicArr[1] },
+    { time: "11:00", systolic: systolicArr[2], diastolic: diastolicArr[2] },
+    { time: "11:30", systolic: systolicArr[3], diastolic: diastolicArr[3] },
+    { time: "12:00", systolic: systolicArr[4], diastolic: diastolicArr[4] },
   ];
 
   return (
     <div className="bg-gradient-to-br from-orange-600 via-orange-500 to-orange-300 min-h-screen text-gray-100 font-sans">
       <NavBar />
+      <Toaster position="top-right" reverseOrder={false} />
       
       <div className="container mx-auto px-4 py-8">
-        {/* <header className="bg-gray-900 bg-opacity-95 shadow-xl rounded-xl mb-8 border border-indigo-900">
-          <div className="flex items-center justify-center space-x-3 py-5">
-            <Activity className="h-9 w-9 text-orange-400" />
-            <h1 className="text-2xl md:text-3xl font-extrabold text-gray-50 tracking-tight">
-              Vital Signs Monitor
-            </h1>
-          </div>
-        </header> */}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 font-poppins gap-8 mt-16">
           {/* Main Content Area */}
@@ -80,13 +124,14 @@ function VitalInput() {
                           Systolic (mmHg)
                         </label>
                         <input
+                        min="0"
                           type="number"
                           id="systolic"
                           value={vitals.systolic}
                           onChange={handleInputChange}
                           className="mt-2 block w-full px-4 py-2 bg-gray-800 border border-indigo-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-gray-100 sm:text-sm transition-all duration-200"
                           placeholder="120"
-                          required
+                          // required
                         />
                       </div>
                       <div>
@@ -97,13 +142,14 @@ function VitalInput() {
                           Diastolic (mmHg)
                         </label>
                         <input
+                        min="0"
                           type="number"
                           id="diastolic"
                           value={vitals.diastolic}
                           onChange={handleInputChange}
                           className="mt-2 block w-full px-4 py-2 bg-gray-800 border border-indigo-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-gray-100 sm:text-sm transition-all duration-200"
                           placeholder="80"
-                          required
+                          // required
                         />
                       </div>
                     </div>
@@ -127,13 +173,14 @@ function VitalInput() {
                         Beats per minute (BPM)
                       </label>
                       <input
+                      min="0"
                         type="number"
                         id="pulse"
                         value={vitals.pulse}
                         onChange={handleInputChange}
                         className="mt-2 block w-full px-4 py-2 bg-gray-800 border border-indigo-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-gray-100 sm:text-sm transition-all duration-200"
                         placeholder="72"
-                        required
+                        // required
                       />
                     </div>
                   </div>

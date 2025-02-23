@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -8,32 +8,59 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import { Toaster, toast } from 'react-hot-toast';
 import { motion } from "framer-motion";
 import { Activity, Scale, Ruler, Percent, Heart, Flame } from "lucide-react";
 import NavBar from "../NavBar";
+import { useAuth } from "../../Context/AuthProvider";
+import axios from "axios";
+
 export default function BodyMeasureInput() {
-  const [weight, setWeight] = useState(localStorage.getItem("weight") || "");
-  const [height, setHeight] = useState(localStorage.getItem("height") || "");
-  const [bmi, setBmi] = useState(localStorage.getItem("bmi") || "");
-  const [bodyFat, setBodyFat] = useState(localStorage.getItem("bodyFat") || "");
-  const [gender, setGender] = useState(localStorage.getItem("gender") || "male");
+  const { currentUser } = useAuth();
+  const [weight, setWeight] = useState("");
+  const [height, setHeight] = useState("");
+  const [bmi, setBmi] = useState("");
+  const [bodyFat, setBodyFat] = useState("");
+  const [gender, setGender] = useState("male");
   const [bmr, setBmr] = useState("");
   const [bmiCategory, setBmiCategory] = useState("");
-  const [fitnessTip , setFitnessTip] = useState("");
-  useEffect(() => {
-    if (weight && height) calculateBMI();
-  }, [weight, height, bodyFat, gender]);
+  const [fitnessTip, setFitnessTip] = useState("");
 
-  const calculateBMI = () => {
-    if (weight && height) {
-      const heightInMeters = height / 100;
-      const bmiValue = (weight / (heightInMeters * heightInMeters)).toFixed(2);
-      setBmi(bmiValue);
-      localStorage.setItem("bmi", bmiValue);
-      updateBMICategory(bmiValue);
-      calculateBMR(weight, height, bodyFat, gender);
-    }
+  const [BodyMeasure, setBodyMeasure] = useState({
+    weight: "",
+    height: "",
+    bmi: "",
+    bodyFat: "",
+  })
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setBodyMeasure((bodyMeasure) => ({ ...bodyMeasure, [id]: value }));
   };
+
+  // const calculateBMI = () => {
+  //   if (BodyMeasure.weight && BodyMeasure.height) {
+  //     const w=parseInt(BodyMeasure.weight);
+  //     const h=parseInt(BodyMeasure.height)
+  //     const heightInMeters = h / 100;
+  //     const bmiValue = (w / (heightInMeters * heightInMeters)).toFixed(2);
+  //     console.log(bmiValue);
+  //     setBodyMeasure((prev) => ({
+  //       ...prev,
+  //       bmi: (bmiValue),
+  //     }));      
+  //     updateBMICategory(bmiValue);
+  //     calculateBMR(BodyMeasure.weight, BodyMeasure.height, gender);
+  //   }
+  // };
+
+  const getCalculatedBMI = (weight, height) => {
+    const w = parseInt(weight);
+    const h = parseInt(height);
+    const heightInMeters = h / 100;
+    return (w / (heightInMeters * heightInMeters)).toFixed(2);
+  };
+
 
   const updateBMICategory = (bmiValue) => {
     let category = "";
@@ -54,8 +81,10 @@ export default function BodyMeasureInput() {
     setBmiCategory(category);
     setFitnessTip(tip);
   };
-  const calculateBMR = (w, h, bf, g) => {
-    const leanMass = w * (1 - bf / 100);
+
+  const calculateBMR = (w, h, g) => {
+
+    // Note: Age is hard-coded as 25 here.
     const bmrValue =
       g === "male"
         ? (88.36 + 13.4 * w + 4.8 * h - 5.7 * 25).toFixed(2)
@@ -63,11 +92,78 @@ export default function BodyMeasureInput() {
     setBmr(bmrValue);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (BodyMeasure.weight && BodyMeasure.height) {
+      // Calculate BMI synchronously
+      const bmiValue = getCalculatedBMI(BodyMeasure.weight, BodyMeasure.height);
+
+      updateBMICategory(bmiValue);
+      calculateBMR(BodyMeasure.weight, BodyMeasure.height, gender);
+
+      // Build the payload with the calculated BMI value
+      const payload = {
+        ...BodyMeasure,
+        bmi: bmiValue,
+      };
+
+      try {
+        if (currentUser) {
+          console.log("Payload to send:", payload);
+          const response = await axios.post(
+            `http://localhost:4000/server/dashuser/add-body-measures/${currentUser._id}`,
+            payload
+          );
+          console.log("Response:", response);
+
+          if (response.data.success) {
+            getBodyMeasures();
+            toast.success("Body Measurements Saved.. !");
+          } else {
+            toast.error("Failed to Save Body Measurements.. !");
+          }
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to Save Body Measurements.. !");
+      }
+    } else {
+      toast.error("Please enter weight and height");
+    }
+  };
+
+
   const data = [
-    { name: "Weight", value: weight ? parseFloat(weight) : 0 },
-    { name: "Height", value: height ? parseFloat(height) : 0 },
-    { name: "BMI", value: bmi ? parseFloat(bmi) : 0 },
+    { name: "Weight", value: BodyMeasure.weight ? parseFloat(BodyMeasure.weight) : 0 },
+    { name: "Height", value: BodyMeasure.height ? parseFloat(BodyMeasure.height) : 0 },
+    { name: "BMI", value: BodyMeasure.bmi ? parseFloat(BodyMeasure.bmi) : 0 },
   ];
+
+  async function getBodyMeasures() {
+    try {
+      if (currentUser) {
+        const response = await axios.get(`http://localhost:4000/server/dashuser/get-body-measures/${currentUser._id}`);
+        if (response.data.success) {
+          const data = response.data;
+          setBodyMeasure({
+            height: data.height,
+            weight: data.weight,
+            bodyFat: data.bodyFat,
+            bmi: data.bmi
+          })
+          updateBMICategory(response.data.bmi);
+          calculateBMR(data.weight, data.height, gender);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getBodyMeasures();
+  }, [])
 
   const getBMICategoryColor = () => {
     switch (bmiCategory.toLowerCase()) {
@@ -83,15 +179,15 @@ export default function BodyMeasureInput() {
         return "text-gray-500";
     }
   };
-  
 
-  const InputField = ({ label, icon: Icon, value, onChange, readOnly = false, unit = "", type = "number" }) => (
+  const InputField = ({ id, label, icon: Icon, value, onChange, readOnly = false, unit = "", type = "number" }) => (
     <div className="bg-[#000042]/90 backdrop-blur-lg rounded-xl p-4 transition-all duration-300 hover:bg-[#000042]/95">
       <div className="flex items-center gap-3 mb-2">
         <Icon className="w-5 h-5 text-orange-400" />
-        <label className="text-lg font-medium text-white">{label}</label>
+        <label htmlFor={id} className="text-lg font-medium text-white">{label}</label>
       </div>
       <input
+        id={id}
         type={type}
         className={`w-full bg-[#000042]/50 text-white p-3 rounded-lg border border-orange-400/20 focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all duration-300 ${readOnly ? 'cursor-not-allowed' : ''}`}
         value={value}
@@ -103,91 +199,87 @@ export default function BodyMeasureInput() {
     </div>
   );
 
+
   return (
     <div>
-      <div>
-        <NavBar/>
-      </div>
+      <NavBar />
       <motion.div
         className="min-h-screen bg-gradient-to-br from-orange-500 to-orange-300 p-8 font-poppins"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
+        <Toaster position="top-right" reverseOrder={false} />
         <div className="max-w-7xl mx-auto">
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-14">
-            <motion.div 
+            <motion.div
               className="space-y-6"
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <div className="bg-[#000042]/80 backdrop-blur-lg rounded-2xl p-6 border border-orange-400/20">
-                <div className="grid gap-6">
-                  <div className="flex gap-4">
-                    <button
-                      className={`flex-1 py-3 px-6 rounded-lg transition-all duration-300 ${
-                        gender === "male" 
-                          ? "bg-orange-500 text-white" 
+              <form onSubmit={handleSubmit}>
+                <div className="bg-[#000042]/80 backdrop-blur-lg rounded-2xl p-6 border border-orange-400/20">
+                  <div className="grid gap-6">
+                    <div className="flex gap-4">
+                      <button
+                        type="button"
+                        className={`flex-1 py-3 px-6 rounded-lg transition-all duration-300 ${gender === "male"
+                          ? "bg-orange-500 text-white"
                           : "bg-[#000042] text-white/70 hover:bg-[#000042]/80"
-                      }`}
-                      onClick={() => {
-                        setGender("male");
-                        localStorage.setItem("gender", "male");
-                      }}
-                    >
-                      Male
-                    </button>
-                    <button
-                      className={`flex-1 py-3 px-6 rounded-lg transition-all duration-300 ${
-                        gender === "female" 
-                          ? "bg-orange-500 text-white" 
-                          : "bg-[#000042] text-white/70 x"
-                      }`}
-                      onClick={() => {
-                        setGender("female");
-                        localStorage.setItem("gender", "female");
-                      }}
-                    >
-                      Female
-                    </button>
+                          }`}
+                        onClick={() => setGender("male")}
+                      >
+                        Male
+                      </button>
+                      <button
+                        type="button"
+                        className={`flex-1 py-3 px-6 rounded-lg transition-all duration-300 ${gender === "female"
+                          ? "bg-orange-500 text-white"
+                          : "bg-[#000042] text-white/70"
+                          }`}
+                        onClick={() => setGender("female")}
+                      >
+                        Female
+                      </button>
+                    </div>
+
+                    <InputField
+                      id="weight"
+                      label="Weight"
+                      icon={Scale}
+                      value={BodyMeasure.weight}
+                      onChange={handleInputChange}
+                      unit="kg"
+                    />
+
+
+                    <InputField
+                      id="height"
+                      label="Height"
+                      icon={Ruler}
+                      value={BodyMeasure.height}
+                      onChange={handleInputChange}
+                      unit="cm"
+                    />
+
+                    <InputField
+                      id="bodyFat"
+                      label="Body Fat"
+                      icon={Percent}
+                      value={BodyMeasure.bodyFat}
+                      onChange={handleInputChange}
+                      unit="%"
+                    />
                   </div>
-
-                  <InputField
-                    label="Weight"
-                    icon={Scale}
-                    value={weight}
-                    onChange={(e) => {
-                      setWeight(e.target.value);
-                      localStorage.setItem("weight", e.target.value);
-                    }}
-                    unit="kg"
-                  />
-
-                  <InputField
-                    label="Height"
-                    icon={Ruler}
-                    value={height}
-                    onChange={(e) => {
-                      setHeight(e.target.value);
-                      localStorage.setItem("height", e.target.value);
-                    }}
-                    unit="cm"
-                  />
-
-                  <InputField
-                    label="Body Fat"
-                    icon={Percent}
-                    value={bodyFat}
-                    onChange={(e) => {
-                      setBodyFat(e.target.value);
-                      localStorage.setItem("bodyFat", e.target.value);
-                    }}
-                    unit="%"
-                  />
+                  <button
+                    type="submit"
+                    className="mt-6 w-full py-3 bg-orange-500 text-white rounded-lg transition-all duration-300 hover:bg-orange-600"
+                  >
+                    Save Metrics
+                  </button>
                 </div>
-              </div>
+              </form>
 
               <div className="bg-[#000042]/80 backdrop-blur-lg rounded-2xl p-6 border border-orange-400/20">
                 <div className="grid gap-6">
@@ -198,7 +290,7 @@ export default function BodyMeasureInput() {
                         <span className="text-lg font-medium text-white">BMI</span>
                       </div>
                       <span className={`text-xl font-bold ${getBMICategoryColor()}`}>
-                        {bmi || "-"}
+                        {BodyMeasure.bmi || "-"}
                       </span>
                     </div>
                     {bmiCategory && (
@@ -221,7 +313,7 @@ export default function BodyMeasureInput() {
               </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               className="bg-[#000042]/80 backdrop-blur-lg rounded-2xl p-6 border h-fit border-orange-400/20"
               initial={{ x: 20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -234,14 +326,14 @@ export default function BodyMeasureInput() {
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis 
-                    dataKey="name" 
+                  <XAxis
+                    dataKey="name"
                     stroke="rgba(255,255,255,0.5)"
                   />
-                  <YAxis 
+                  <YAxis
                     stroke="rgba(255,255,255,0.5)"
                   />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{
                       backgroundColor: "rgba(0,0,66,0.95)",
                       border: "1px solid rgba(255,255,255,0.2)",
@@ -249,9 +341,9 @@ export default function BodyMeasureInput() {
                       color: "white"
                     }}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="value" 
+                  <Line
+                    type="monotone"
+                    dataKey="value"
                     stroke="#fb923c"
                     strokeWidth={2}
                     dot={{ fill: "#fb923c", strokeWidth: 2 }}
@@ -260,10 +352,9 @@ export default function BodyMeasureInput() {
                 </LineChart>
               </ResponsiveContainer>
               <div className="bg-[#000042] text-white mt-4 rounded-md text-xl p-4">
-  <h2 className="text-[#FFD700] font-bold mb-2">Fitness Tip</h2>
-  {fitnessTip && <p>{fitnessTip}</p>}
-</div>
-
+                <h2 className="text-[#FFD700] font-bold mb-2">Fitness Tip</h2>
+                {fitnessTip && <p>{fitnessTip}</p>}
+              </div>
             </motion.div>
           </div>
         </div>

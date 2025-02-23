@@ -39,13 +39,14 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = (updatedUser) => {
     setCurrentUser((prevUser) => {
-      if (JSON.stringify(prevUser) === JSON.stringify(updatedUser)) {
-        return prevUser; // Prevent unnecessary updates
-      }
-      localStorage.setItem('Users', JSON.stringify(updatedUser));
-      return updatedUser;
+        if (JSON.stringify(prevUser) === JSON.stringify(updatedUser)) {
+            return prevUser; // Prevent unnecessary updates
+        }
+        localStorage.setItem("Users", JSON.stringify(updatedUser));
+        return updatedUser;
     });
-  };
+};
+
 
   const value = {
     currentUser,
