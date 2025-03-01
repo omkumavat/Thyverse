@@ -7,14 +7,15 @@ import { useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from "../Context/AuthProvider";
 
-const NavBar = () => {
+const NavBar2 = () => {
+    const navigate = useNavigate()
     const { logout, currentUser } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const dispatch = useDispatch()
-    const navigate = useNavigate()
     const logoutHandler = () => {
-        dispatch(logout());
+        // dispatch(logout());
         logout();
+        window.location.href='/';
     }
 
     return (
@@ -26,7 +27,7 @@ const NavBar = () => {
                         <div className="flex items-center gap-2">
                             <img src={logo} width={60} height={60} alt="ThyRight Logo" />
                             <h1 className="text-4xl mt-2 font-bold text-gray-800 font-qenbay">
-                                ThyRight
+                                ThyVerse
                             </h1>
 
 
@@ -35,23 +36,18 @@ const NavBar = () => {
                         {/* Desktop Navigation */}
                         <div className="hidden md:flex items-center gap-4">
                             <a
-                                href="/"
+                                href="/thyverse"
                                 className="text-gray-600 font-poppins px-4 py-2 rounded-md transition-colors hover:bg-blue-600 hover:text-white"
                             >
                                 Home
                             </a>
                             <a
-                                href="/about"
+                                href="/thyverse/about"
                                 className="text-gray-600 px-4 py-2 font-poppins rounded-md transition-colors hover:bg-blue-600 hover:text-white"
                             >
                                 About
                             </a>
-                            <a
-                                href="#technology"
-                                className="text-gray-600 px-4 py-2 font-poppins rounded-md transition-colors hover:bg-blue-600 hover:text-white"
-                            >
-                                Technology
-                            </a>
+                            
                             <a
                                 href="#contact"
                                 className="text-gray-600 px-4 py-2 font-poppins rounded-md transition-colors hover:bg-blue-600 hover:text-white"
@@ -61,7 +57,7 @@ const NavBar = () => {
                             {
                                 currentUser && (
                                     <a
-                                        href="/dashboard"
+                                        href="/thyverse/dashboard"
                                         className="text-gray-600 px-4 py-2 font-poppins rounded-md transition-colors hover:bg-blue-600 hover:text-white"
                                     >
                                         DashBoard
@@ -163,4 +159,4 @@ const NavBar = () => {
     );
 };
 
-export default NavBar;
+export default NavBar2;

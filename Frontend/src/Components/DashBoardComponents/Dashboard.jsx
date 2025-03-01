@@ -41,8 +41,9 @@ function Dashboard() {
   const [vitals, setVitals] = useState([]);
   const [medications, setMedications] = useState([]);
   const [bodyMeasures, setBodyMeasures] = useState({});
-  const [diastolic,setDiastolic]=useState([]);
-  const [sistolic,setSistolic]=useState([]);
+  const [diastolic, setDiastolic] = useState([]);
+  const [sistolic, setSistolic] = useState([]);
+  const [pulserate, setPulserate] = useState([]);
 
   // Fetch data when currentUser is available
   useEffect(() => {
@@ -101,8 +102,8 @@ function Dashboard() {
       if (response.data.success) {
         // Assuming the API returns a vitals array like:
         // [{ name: "Mon", bp: 120, pulse: 72 }, ...]
-        console.log(response.data.systolic);
-        
+        console.log(response.data.diastolic);
+        setPulserate(response.data.pulse)
         setSistolic(response.data.systolic);
         setDiastolic(response.data.diastolic);
       }
@@ -115,31 +116,54 @@ function Dashboard() {
   const displayedBodyMeasures =
     Object.keys(bodyMeasures).length > 0
       ? [
-          { name: "Weight", value: bodyMeasures.weight },
-          { name: "Height", value: bodyMeasures.height },
-          { name: "BMI", value: bodyMeasures.bmi },
-          { name: "Body Fat %", value: bodyMeasures.bodyFat },
-        ]
+        { name: "Weight", value: bodyMeasures.weight },
+        { name: "Height", value: bodyMeasures.height },
+        { name: "BMI", value: bodyMeasures.bmi },
+        { name: "Body Fat %", value: bodyMeasures.bodyFat },
+      ]
       : [];
 
   // If no data is fetched yet, you can fall back to defaults (or show a loading state)
+  // const displayedVitals = [
+  //         { name: "Mon", sistolic: sistolic[0], diastolic: diastolic[0] },
+  //         { name: "Tue", sistolic: sistolic[1], diastolic: diastolic[1] },
+  //         { name: "Wed", sistolic: sistolic[2], diastolic: diastolic[2] },
+  //         { name: "Thu", sistolic: sistolic[3], diastolic: diastolic[3] },
+  //         { name: "Fri", sistolic: sistolic[4], diastolic: diastolic[4] },
+  //       ];
+
   const displayedVitals = [
-          { name: "Mon", sistolic: sistolic[0], diastolic: diastolic[0] },
-          { name: "Tue", sistolic: sistolic[1], diastolic: diastolic[1] },
-          { name: "Wed", sistolic: sistolic[2], diastolic: diastolic[2] },
-          { name: "Thu", sistolic: sistolic[3], diastolic: diastolic[3] },
-          { name: "Fri", sistolic: sistolic[4], diastolic: diastolic[4] },
-        ];
+    {
+      time: sistolic[0]?.date, systolic: sistolic[0]?.value, diastolic: diastolic[0]?.value,
+      pulse: pulserate[0]?.value
+    },
+    {
+      time: sistolic[1]?.date, systolic: sistolic[1]?.value, diastolic: diastolic[1]?.value,
+      pulse: pulserate[1]?.value
+    },
+    {
+      time: sistolic[2]?.date, systolic: sistolic[2]?.value, diastolic: diastolic[2]?.value,
+      pulse: pulserate[2]?.value
+    },
+    {
+      time: sistolic[3]?.date, systolic: sistolic[3]?.value, diastolic: diastolic[3]?.value,
+      pulse: pulserate[3]?.value
+    },
+    {
+      time: sistolic[4]?.date, systolic: sistolic[4]?.value, diastolic: diastolic[4]?.value,
+      pulse: pulserate[4]?.value
+    },
+  ];
 
   const displayedMedications =
     medications.length > 0
       ? medications
       : [
-          { name: "Metformin", value: 35 },
-          { name: "Lisinopril", value: 25 },
-          { name: "Aspirin", value: 20 },
-          { name: "Vitamin D", value: 20 },
-        ];
+        { name: "Metformin", value: 35 },
+        { name: "Lisinopril", value: 25 },
+        { name: "Aspirin", value: 20 },
+        { name: "Vitamin D", value: 20 },
+      ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -150,20 +174,20 @@ function Dashboard() {
           <p className="text-orange-300">John Doe - ID: 12345</p>
         </div>
         <div className="flex items-center gap-x-4 text-xl font-bold font-poppins">
-        <p
-            onClick={() => navigate("/dashboard/bodyinput")}
+          <p
+            onClick={() => navigate("/thyverse/dashboard/bodyinput")}
             className="cursor-pointer"
           >
             My BodyMeasurements
           </p>
           <p
-            onClick={() => navigate("/dashboard/vitalinput")}
+            onClick={() => navigate("/thyverse/dashboard/vitalinput")}
             className="cursor-pointer"
           >
             My Vitals
           </p>
           <p
-            onClick={() => navigate("/dashboard/medication")}
+            onClick={() => navigate("/thyverse/dashboard/medication")}
             className="cursor-pointer"
           >
             My Medications
@@ -186,11 +210,45 @@ function Dashboard() {
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={displayedVitals}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
+              <XAxis
+                dataKey="time"
+                tick={{ fontSize: 12, fill: '#D1D5DB' }}
+                tickMargin={10}
+                stroke="#6B7280"
+              />
+              <YAxis
+                tick={{ fontSize: 12, fill: '#D1D5DB' }}
+                tickMargin={10}
+                stroke="#6B7280"
+              />
               <Tooltip />
-              <Line type="monotone" dataKey="sistolic" stroke="#FF9F43" />
-              <Line type="monotone" dataKey="diastolic" stroke="#1B2B65" />
+              <Line
+                                   type="monotone"
+                                   dataKey="systolic"
+                                   name="Systolic"
+                                   stroke="#F97316"
+                                   strokeWidth={2.5}
+                                   dot={{ r: 5, fill: '#F97316' }}
+                                   activeDot={{ r: 7, fill: '#FDBA74' }}
+                                 />
+                                 <Line
+                                   type="monotone"
+                                   dataKey="diastolic"
+                                   name="Diastolic"
+                                   stroke="#FB923C"
+                                   strokeWidth={2.5}
+                                   dot={{ r: 5, fill: '#FB923C' }}
+                                   activeDot={{ r: 7, fill: '#FED7AA' }}
+                                 />
+                                 <Line
+                                   type="monotone"
+                                   dataKey="pulse"
+                                   name="PulseRate"
+                                   stroke="#FB923C"
+                                   strokeWidth={2.5}
+                                   dot={{ r: 5, fill: '#FB923C' }}
+                                   activeDot={{ r: 7, fill: '#FED7AA' }}
+                                 />
             </LineChart>
           </ResponsiveContainer>
         </motion.div>

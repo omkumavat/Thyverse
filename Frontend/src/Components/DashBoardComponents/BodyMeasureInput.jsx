@@ -12,7 +12,7 @@ import {
 import { Toaster, toast } from 'react-hot-toast';
 import { motion } from "framer-motion";
 import { Activity, Scale, Ruler, Percent, Heart, Flame } from "lucide-react";
-import NavBar from "../NavBar";
+import NavBar2 from "../NavBar2";
 import { useAuth } from "../../Context/AuthProvider";
 import axios from "axios";
 
@@ -229,7 +229,7 @@ export default function BodyMeasureInput() {
 
   return (
     <div>
-      <NavBar />
+      <NavBar2 />
       <motion.div
         className="min-h-screen bg-gradient-to-br from-orange-500 to-orange-300 p-8 font-poppins"
         initial={{ opacity: 0 }}

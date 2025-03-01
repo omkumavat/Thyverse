@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Heart, Activity, AlertCircle } from "lucide-react";
-import NavBar from "../NavBar";
+import NavBar2 from "../NavBar2";
 import Pulse from "../../Images/Pulse.gif";
 import Bp from "../../Images/Bp.png";
 import axios from "axios";
@@ -111,7 +111,7 @@ function VitalInput() {
 
   return (
     <div className="bg-gradient-to-br from-orange-600 via-orange-500 to-orange-300 min-h-screen text-gray-100 font-sans">
-      <NavBar />
+      <NavBar2 />
       <Toaster position="top-right" reverseOrder={false} />
 
       <div className="container mx-auto px-4 py-8">

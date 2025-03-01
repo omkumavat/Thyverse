@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Pill, Activity, Clock } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { Pill, Activity, Clock } from "lucide-react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
-import NavBar from '../NavBar';
+import NavBar2 from '../NavBar2';
 import { Toaster, toast } from 'react-hot-toast';
 import { useAuth } from '../../Context/AuthProvider';
 import axios from 'axios';
@@ -182,7 +182,7 @@ function MedicationForm() {
   return (
     <div>
       <div>
-        <NavBar />
+        <NavBar2 />
       </div>
       <Toaster position="top-right" reverseOrder={false} />
       <div className="min-h-screen bg-gradient-to-br from-orange-600 to-orange-400 p-8">
