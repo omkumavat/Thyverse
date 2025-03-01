@@ -9,6 +9,7 @@ import ProtectedRouteForLogin from "./Context/ProtectedRoute";
 import VitalInput from "./Components/DashBoardComponents/VitalInput";
 import BodyMeasureInput from "./Components/DashBoardComponents/BodyMeasureInput";
 import MedicationForm from "./Components/DashBoardComponents/MedicationForm";
+import ThyverseHome from "./Components/ThyverseHome";
 function App() {
   const { currentUser } = useAuth();
   console.log(currentUser);
@@ -29,7 +30,7 @@ function App() {
       <Route path="/dashboard/vitalinput" element={<VitalInput/>}></Route>
       <Route path="/dashboard/bodyinput" element={<BodyMeasureInput/>}/>
       <Route path="/dashboard/medication" element={<MedicationForm/>}/>
-
+      <Route path="/thyverse" element={<ThyverseHome/>}/>
     </Routes>
   );
 }

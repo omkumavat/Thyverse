@@ -31,7 +31,7 @@ const LoginForm = ({ onToggleAuth }) => {
         login(userData)
 
         // Navigate to a protected route (e.g., dashboard)
-        navigate('/');
+        navigate('/thyverse');
       } else {
         // Handle login failure, for example by setting an error message
         setError(res.data.message || 'Login failed');
