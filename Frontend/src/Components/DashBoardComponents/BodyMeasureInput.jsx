@@ -7,6 +7,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Legend
 } from "recharts";
 import { Toaster, toast } from 'react-hot-toast';
 import { motion } from "framer-motion";
@@ -17,19 +18,17 @@ import axios from "axios";
 
 export default function BodyMeasureInput() {
   const { currentUser } = useAuth();
-  const [weight, setWeight] = useState("");
-  const [height, setHeight] = useState("");
-  const [bmi, setBmi] = useState("");
-  const [bodyFat, setBodyFat] = useState("");
+  const [bmi, setBmi] = useState(0);
   const [gender, setGender] = useState("male");
-  const [bmr, setBmr] = useState("");
+  const [bmr, setBmr] = useState(0);
   const [bmiCategory, setBmiCategory] = useState("");
   const [fitnessTip, setFitnessTip] = useState("");
+  const [sevenDayBodyMeasures,setSevenDayBodyMeasures]=useState(null);
 
   const [BodyMeasure, setBodyMeasure] = useState({
+    age: "",
     weight: "",
     height: "",
-    bmi: "",
     bodyFat: "",
   })
 
@@ -37,22 +36,6 @@ export default function BodyMeasureInput() {
     const { id, value } = e.target;
     setBodyMeasure((bodyMeasure) => ({ ...bodyMeasure, [id]: value }));
   };
-
-  // const calculateBMI = () => {
-  //   if (BodyMeasure.weight && BodyMeasure.height) {
-  //     const w=parseInt(BodyMeasure.weight);
-  //     const h=parseInt(BodyMeasure.height)
-  //     const heightInMeters = h / 100;
-  //     const bmiValue = (w / (heightInMeters * heightInMeters)).toFixed(2);
-  //     console.log(bmiValue);
-  //     setBodyMeasure((prev) => ({
-  //       ...prev,
-  //       bmi: (bmiValue),
-  //     }));      
-  //     updateBMICategory(bmiValue);
-  //     calculateBMR(BodyMeasure.weight, BodyMeasure.height, gender);
-  //   }
-  // };
 
   const getCalculatedBMI = (weight, height) => {
     const w = parseInt(weight);
@@ -73,7 +56,7 @@ export default function BodyMeasureInput() {
       tip = "Maintain a healthy diet and regular exercise routine to stay fit.";
     } else if (bmiValue < 29.9) {
       category = "Overweight";
-      tip = "Incorporate more physical activity and a balanced diet to shed extra weight gradually.";
+      tip = "Incorporate more physical activity and change diet to shed extra weight gradually.";
     } else {
       category = "Obese";
       tip = "Consult a healthcare professional for personalized diet and exercise recommendations.";
@@ -82,14 +65,16 @@ export default function BodyMeasureInput() {
     setFitnessTip(tip);
   };
 
-  const calculateBMR = (w, h, g) => {
+  const calculateBMR = (w, h, g,age) => {
 
-    // Note: Age is hard-coded as 25 here.
+    h=parseFloat(w);
+    w=parseFloat(w);
+    age=parseInt(age);
     const bmrValue =
       g === "male"
-        ? (88.36 + 13.4 * w + 4.8 * h - 5.7 * 25).toFixed(2)
-        : (447.6 + 9.2 * w + 3.1 * h - 4.3 * 25).toFixed(2);
-    setBmr(bmrValue);
+        ? (10 * w + 6.25 * h - 5 * age + 5).toFixed(2)
+        : (10 * w + 6.25 * h - 5 * age - 161).toFixed(2);
+    return bmrValue;
   };
 
   const handleSubmit = async (e) => {
@@ -100,13 +85,16 @@ export default function BodyMeasureInput() {
       const bmiValue = getCalculatedBMI(BodyMeasure.weight, BodyMeasure.height);
 
       updateBMICategory(bmiValue);
-      calculateBMR(BodyMeasure.weight, BodyMeasure.height, gender);
+      const bmrValue = calculateBMR(BodyMeasure.weight,BodyMeasure.height, gender,BodyMeasure.age);
 
       // Build the payload with the calculated BMI value
       const payload = {
         ...BodyMeasure,
         bmi: bmiValue,
+        bmr:bmrValue
       };
+
+      console.log(payload)
 
       try {
         if (currentUser) {
@@ -133,27 +121,22 @@ export default function BodyMeasureInput() {
     }
   };
 
-
-  const data = [
-    { name: "Weight", value: BodyMeasure.weight ? parseFloat(BodyMeasure.weight) : 0 },
-    { name: "Height", value: BodyMeasure.height ? parseFloat(BodyMeasure.height) : 0 },
-    { name: "BMI", value: BodyMeasure.bmi ? parseFloat(BodyMeasure.bmi) : 0 },
-  ];
-
   async function getBodyMeasures() {
     try {
       if (currentUser) {
         const response = await axios.get(`http://localhost:4000/server/dashuser/get-body-measures/${currentUser._id}`);
         if (response.data.success) {
           const data = response.data;
+          console.log(data);
+          
           setBodyMeasure({
+            age: data.age,
             height: data.height,
-            weight: data.weight,
-            bodyFat: data.bodyFat,
-            bmi: data.bmi
           })
-          updateBMICategory(response.data.bmi);
-          calculateBMR(data.weight, data.height, gender);
+          setBmr(data.bmr[data.bmr.length-1].value);
+          setBmi(data.bmi[data.bmi.length-1].value);
+          setSevenDayBodyMeasures(data)
+          updateBMICategory(parseInt(bmi));
         }
       }
     } catch (error) {
@@ -198,6 +181,50 @@ export default function BodyMeasureInput() {
       {unit && <span className="text-sm text-orange-200 mt-1 block">{unit}</span>}
     </div>
   );
+
+  const data = [
+    { time: sevenDayBodyMeasures?.bmi[0]?.date,
+       BMI: sevenDayBodyMeasures?.bmi[0]?.value, 
+      BMR: sevenDayBodyMeasures?.bmr[0]?.value,
+      Weight: sevenDayBodyMeasures?.weight[0]?.value,
+      BodyFat: sevenDayBodyMeasures?.bodyfat[0]?.value,
+    },
+    { time:sevenDayBodyMeasures?.bmi[1]?.date,
+       BMI: sevenDayBodyMeasures?.bmi[1]?.value,
+       BMR: sevenDayBodyMeasures?.bmr[1]?.value, 
+       Weight: sevenDayBodyMeasures?.weight[1]?.value,
+       BodyFat: sevenDayBodyMeasures?.bodyfat[1]?.value,},
+
+    { time: sevenDayBodyMeasures?.bmi[2]?.date,
+       BMI: sevenDayBodyMeasures?.bmi[2]?.value,
+      BMR: sevenDayBodyMeasures?.bmr[2]?.value,
+      Weight: sevenDayBodyMeasures?.weight[2]?.value,
+      BodyFat: sevenDayBodyMeasures?.bodyfat[2]?.value,},
+
+    { time: sevenDayBodyMeasures?.bmi[3]?.date
+      , BMI: sevenDayBodyMeasures?.bmi[3]?.value, 
+      BMR: sevenDayBodyMeasures?.bmr[3]?.value,
+      Weight: sevenDayBodyMeasures?.weight[3]?.value,
+      BodyFat: sevenDayBodyMeasures?.bodyfat[3]?.value,},
+
+    { time:sevenDayBodyMeasures?.bmi[4]?.date
+      , BMI: sevenDayBodyMeasures?.bmi[4]?.value, 
+      BMR: sevenDayBodyMeasures?.bmr[4]?.value,
+      Weight: sevenDayBodyMeasures?.weight[4]?.value,
+      BodyFat: sevenDayBodyMeasures?.bodyfat[4]?.value,},
+
+      { time: sevenDayBodyMeasures?.bmi[5]?.date
+        , BMI: sevenDayBodyMeasures?.bmi[5]?.value, 
+        BMR: sevenDayBodyMeasures?.bmr[5]?.value,
+        Weight: sevenDayBodyMeasures?.weight[5]?.value,
+        BodyFat: sevenDayBodyMeasures?.bodyfat[5]?.value,},
+
+        { time: sevenDayBodyMeasures?.bmi[6]?.date
+          , BMI: sevenDayBodyMeasures?.bmi[6]?.value, 
+          BMR: sevenDayBodyMeasures?.bmr[6]?.value,
+          Weight: sevenDayBodyMeasures?.weight[6]?.value,
+          BodyFat: sevenDayBodyMeasures?.bodyfat[6]?.value,},
+  ];
 
 
   return (
@@ -271,6 +298,16 @@ export default function BodyMeasureInput() {
                       onChange={handleInputChange}
                       unit="%"
                     />
+
+                    <InputField
+                      id="age"
+                      label="Age"
+                      icon={Ruler}
+                      value={BodyMeasure.age}
+                      onChange={handleInputChange}
+                      unit="years"
+                    />
+
                   </div>
                   <button
                     type="submit"
@@ -290,7 +327,7 @@ export default function BodyMeasureInput() {
                         <span className="text-lg font-medium text-white">BMI</span>
                       </div>
                       <span className={`text-xl font-bold ${getBMICategoryColor()}`}>
-                        {BodyMeasure.bmi || "-"}
+                        {bmi || "-"}
                       </span>
                     </div>
                     {bmiCategory && (
@@ -312,50 +349,81 @@ export default function BodyMeasureInput() {
                 </div>
               </div>
             </motion.div>
-
-            <motion.div
-              className="bg-[#000042]/80 backdrop-blur-lg rounded-2xl p-6 border h-fit border-orange-400/20"
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.6 }}
-            >
-              <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-                <Activity className="w-5 h-5 text-orange-400" />
-                Metrics Visualization
-              </h3>
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={data}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis
-                    dataKey="name"
-                    stroke="rgba(255,255,255,0.5)"
-                  />
-                  <YAxis
-                    stroke="rgba(255,255,255,0.5)"
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(0,0,66,0.95)",
-                      border: "1px solid rgba(255,255,255,0.2)",
-                      borderRadius: "8px",
-                      color: "white"
-                    }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#fb923c"
-                    strokeWidth={2}
-                    dot={{ fill: "#fb923c", strokeWidth: 2 }}
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-              <div className="bg-[#000042] text-white mt-4 rounded-md text-xl p-4">
-                <h2 className="text-[#FFD700] font-bold mb-2">Fitness Tip</h2>
-                {fitnessTip && <p>{fitnessTip}</p>}
+            <div className="bg-gray-900 bg-opacity-90 rounded-xl shadow-2xl p-6 border border-indigo-900 hover:shadow-orange-500/20 transition-shadow duration-300">
+              <h2 className="text-xl font-semibold mb-5 text-gray-50">Body Measures Trends</h2>
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={data}>
+                    <CartesianGrid strokeDasharray="4 4" stroke="#4B5563" />
+                    <XAxis
+                      dataKey="time"
+                      tick={{ fontSize: 12, fill: '#D1D5DB' }}
+                      tickMargin={10}
+                      stroke="#6B7280"
+                    />
+                    <YAxis
+                      tick={{ fontSize: 12, fill: '#D1D5DB' }}
+                      tickMargin={10}
+                      stroke="#6B7280"
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'rgba(31, 41, 55, 0.95)',
+                        border: '1px solid #6B7280',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        color: '#F3F4F6',
+                      }}
+                    />
+                    <Legend
+                      verticalAlign="bottom"
+                      height={36}
+                      wrapperStyle={{ fontSize: '12px', color: '#E5E7EB' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Weight"
+                      name="Weight"
+                      stroke="#F97316"
+                      strokeWidth={2.5}
+                      dot={{ r: 5, fill: '#F97316' }}
+                      activeDot={{ r: 7, fill: '#FDBA74' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="BMR"
+                      name="BMR"
+                      stroke="#FB923C"
+                      strokeWidth={2.5}
+                      dot={{ r: 5, fill: '#FB923C' }}
+                      activeDot={{ r: 7, fill: '#FED7AA' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="BMI"
+                      name="BMI"
+                      stroke="#FB923C"
+                      strokeWidth={2.5}
+                      dot={{ r: 5, fill: '#FB953C' }}
+                      activeDot={{ r: 7, fill: '#FED6A' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="BodyFat"
+                      name="BodyFat"
+                      stroke="#FB923C"
+                      strokeWidth={2.5}
+                      dot={{ r: 5, fill: '#FB123C' }}
+                      activeDot={{ r: 7, fill: '#FED2AA' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+                <div className="bg-[#000042] text-white mt-4 rounded-md text-xl p-4">
+                  <h2 className="text-[#FFD700] font-bold mb-2">Fitness Tip</h2>
+                  {fitnessTip && <p>{fitnessTip}</p>}
+                </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </motion.div>

@@ -18,9 +18,10 @@ import {
 import { useAuth } from "../../Context/AuthProvider";
 
 function VitalInput() {
-  const {currentUser}=useAuth();
-  const [systolicArr,setsystolicArr]=useState([]);
-  const [diastolicArr,setdiastolicArr]=useState([]);
+  const { currentUser } = useAuth();
+  const [systolicArr, setsystolicArr] = useState([]);
+  const [diastolicArr, setdiastolicArr] = useState([]);
+  const [pulseArr, setpulseArr] = useState([]);
   const [vitals, setVitals] = useState({
     systolic: "",
     diastolic: "",
@@ -32,25 +33,26 @@ function VitalInput() {
     setVitals((prevVitals) => ({ ...prevVitals, [id]: value }));
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if((vitals.systolic==="" && vitals.diastolic!=="") || (vitals.systolic!=="" && vitals.diastolic==="")){
-      toast.error('Please fill both systolic and diastolic fields');
+    if (vitals.systolic === "" || vitals.diastolic === "" || vitals.pulse === "") {
+      toast.error('All Feilds are compulsory');
+      return;
     }
+
     try {
-      if(currentUser){
-        const response = await axios.post(`http://localhost:4000/server/dashuser/add-vitals/${currentUser._id}`,vitals);
-        if(response.data.success){
+      if (currentUser) {
+        const response = await axios.post(`http://localhost:4000/server/dashuser/add-vitals/${currentUser._id}`, vitals);
+        if (response.data.success) {
           toast.success("Vitals data saved successfuly.. !");
           setVitals({
             systolic: "",
             diastolic: "",
-            pulse:(response.data.pulse) 
+            pulse: "",
           })
-          setsystolicArr(response.data.systolic);
-          setdiastolicArr(response.data.diastolic);
-        }else{
+          getVitals();
+        } else {
           toast.error("Error saving vitals data.. !");
         }
       }
@@ -62,16 +64,17 @@ function VitalInput() {
 
   async function getVitals() {
     try {
-      if(currentUser){
+      if (currentUser) {
         const response = await axios.get(`http://localhost:4000/server/dashuser/get-vitals/${currentUser._id}`);
-        if(response.data.success){
+        if (response.data.success) {
           console.log(response.data.pulse);
           setVitals({
-            pulse:(response.data.pulse) 
+            pulse: (response.data.pulse)
           })
-          
+
           setsystolicArr(response.data.systolic);
           setdiastolicArr(response.data.diastolic);
+          setpulseArr(response.data.pulse)
         }
       }
     } catch (error) {
@@ -81,21 +84,36 @@ function VitalInput() {
   useEffect(() => {
     getVitals();
     console.log(vitals.pulse)
-  },[])
+  }, [])
 
   const data = [
-    { time: "10:00", systolic: systolicArr[0], diastolic: diastolicArr[0] },
-    { time: "10:30", systolic: systolicArr[1], diastolic: diastolicArr[1] },
-    { time: "11:00", systolic: systolicArr[2], diastolic: diastolicArr[2] },
-    { time: "11:30", systolic: systolicArr[3], diastolic: diastolicArr[3] },
-    { time: "12:00", systolic: systolicArr[4], diastolic: diastolicArr[4] },
+    {
+      time: systolicArr[0]?.date, systolic: systolicArr[0]?.value, diastolic: diastolicArr[0]?.value,
+      pulse: pulseArr[0]?.value
+    },
+    {
+      time: systolicArr[1]?.date, systolic: systolicArr[1]?.value, diastolic: diastolicArr[1]?.value,
+      pulse: pulseArr[1]?.value
+    },
+    {
+      time: systolicArr[2]?.date, systolic: systolicArr[2]?.value, diastolic: diastolicArr[2]?.value,
+      pulse: pulseArr[2]?.value
+    },
+    {
+      time: systolicArr[3]?.date, systolic: systolicArr[3]?.value, diastolic: diastolicArr[3]?.value,
+      pulse: pulseArr[3]?.value
+    },
+    {
+      time: systolicArr[4]?.date, systolic: systolicArr[4]?.value, diastolic: diastolicArr[4]?.value,
+      pulse: pulseArr[4]?.value
+    },
   ];
 
   return (
     <div className="bg-gradient-to-br from-orange-600 via-orange-500 to-orange-300 min-h-screen text-gray-100 font-sans">
       <NavBar />
       <Toaster position="top-right" reverseOrder={false} />
-      
+
       <div className="container mx-auto px-4 py-8">
 
         <div className="grid grid-cols-1 lg:grid-cols-3 font-poppins gap-8 mt-16">
@@ -124,14 +142,15 @@ function VitalInput() {
                           Systolic (mmHg)
                         </label>
                         <input
-                        min="0"
+                          max="300"
+                          min="0"
                           type="number"
                           id="systolic"
                           value={vitals.systolic}
                           onChange={handleInputChange}
                           className="mt-2 block w-full px-4 py-2 bg-gray-800 border border-indigo-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-gray-100 sm:text-sm transition-all duration-200"
                           placeholder="120"
-                          // required
+                        required
                         />
                       </div>
                       <div>
@@ -142,21 +161,21 @@ function VitalInput() {
                           Diastolic (mmHg)
                         </label>
                         <input
-                        min="0"
+                          max="300"
+                          min="0"
                           type="number"
                           id="diastolic"
                           value={vitals.diastolic}
                           onChange={handleInputChange}
                           className="mt-2 block w-full px-4 py-2 bg-gray-800 border border-indigo-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-gray-100 sm:text-sm transition-all duration-200"
                           placeholder="80"
-                          // required
+                        required
                         />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Pulse Section */}
                 <div className="flex flex-col md:flex-row items-center gap-6 p-5 bg-gray-800 bg-opacity-60 rounded-xl border border-indigo-800">
                   <div className="order-2 md:order-1 w-full md:w-2/3 bg-indigo-950 bg-opacity-80 p-5 rounded-lg shadow-md border border-indigo-800">
                     <div className="flex items-center space-x-3 mb-4">
@@ -173,14 +192,15 @@ function VitalInput() {
                         Beats per minute (BPM)
                       </label>
                       <input
-                      min="0"
+                        max="100"
+                        min="0"
                         type="number"
                         id="pulse"
                         value={vitals.pulse}
                         onChange={handleInputChange}
                         className="mt-2 block w-full px-4 py-2 bg-gray-800 border border-indigo-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-gray-100 sm:text-sm transition-all duration-200"
                         placeholder="72"
-                        // required
+                      required
                       />
                     </div>
                   </div>
@@ -238,18 +258,18 @@ function VitalInput() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data}>
                     <CartesianGrid strokeDasharray="4 4" stroke="#4B5563" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       tick={{ fontSize: 12, fill: '#D1D5DB' }}
                       tickMargin={10}
                       stroke="#6B7280"
                     />
-                    <YAxis 
+                    <YAxis
                       tick={{ fontSize: 12, fill: '#D1D5DB' }}
                       tickMargin={10}
                       stroke="#6B7280"
                     />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{
                         backgroundColor: 'rgba(31, 41, 55, 0.95)',
                         border: '1px solid #6B7280',
@@ -258,8 +278,8 @@ function VitalInput() {
                         color: '#F3F4F6',
                       }}
                     />
-                    <Legend 
-                      verticalAlign="bottom" 
+                    <Legend
+                      verticalAlign="bottom"
                       height={36}
                       wrapperStyle={{ fontSize: '12px', color: '#E5E7EB' }}
                     />
@@ -276,6 +296,15 @@ function VitalInput() {
                       type="monotone"
                       dataKey="diastolic"
                       name="Diastolic"
+                      stroke="#FB923C"
+                      strokeWidth={2.5}
+                      dot={{ r: 5, fill: '#FB923C' }}
+                      activeDot={{ r: 7, fill: '#FED7AA' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="pulse"
+                      name="PulseRate"
                       stroke="#FB923C"
                       strokeWidth={2.5}
                       dot={{ r: 5, fill: '#FB923C' }}

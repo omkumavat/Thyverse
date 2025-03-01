@@ -7,9 +7,12 @@ const medicationSchema = new mongoose.Schema({
 
     medication_dosage: { type: Number, required: true, },
 
-    medication_frequency: { type: Number, required: true },
+    medication_schedule:{
+        type:[String],
+        required: true
+    },
 
-    medication_date: { type: Number, required: true },
+    medication_date: { type: Date, required: true },
 
     medication_duration: { type: Number, required: true },
 

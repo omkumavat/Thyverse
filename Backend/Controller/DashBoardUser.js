@@ -1,15 +1,15 @@
 import User from "../Models/User.js";
 import Medication from "../Models/Medication.js";
-import cron from 'node-cron';
+import cron, { schedule } from 'node-cron';
 
 export const addMedication = async (req, res) => {
     try {
         const { id } = req.params; // user id from route params
         console.log(req.body);
-        const { medication, dosage, frequency, startDate, duration } = req.body;
+        const { medication, dosage, times, startDate, duration } = req.body;
 
         // Validate required fields
-        if (!id || !medication || dosage == null || frequency == null || !startDate || duration == null) {
+        if (!id || !medication || dosage == null || times===null || !startDate || duration == null) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
@@ -17,19 +17,10 @@ export const addMedication = async (req, res) => {
         if (isNaN(Number(dosage)) || Number(dosage) <= 0) {
             return res.status(400).json({ error: "Invalid dosage value" });
         }
-        if (isNaN(Number(frequency)) || Number(frequency) <= 0) {
-            return res.status(400).json({ error: "Invalid frequency value" });
-        }
+
         if (isNaN(Number(duration)) || Number(duration) <= 0) {
             return res.status(400).json({ error: "Invalid duration value" });
         }
-
-        // Convert startDate to a timestamp and validate
-        const medicationDateObj = new Date(startDate);
-        if (isNaN(medicationDateObj.getTime())) {
-            return res.status(400).json({ error: "Invalid start date" });
-        }
-        const medicationDate = medicationDateObj.getTime();
 
         // Validate that the user exists
         const user = await User.findById(id);
@@ -40,10 +31,10 @@ export const addMedication = async (req, res) => {
         // Create and save the new medication
         const newMedication = new Medication({
             userId: id,
+            medication_schedule:times,
             medication_name: medication,
             medication_dosage: Number(dosage),
-            medication_frequency: Number(frequency),
-            medication_date: medicationDate,
+            medication_date: startDate,
             medication_duration: Number(duration),
         });
         const savedMedication = await newMedication.save();
@@ -76,8 +67,7 @@ export const getMediForGraph = async (req, res) => {
         const medicationDosages = medications.map(med => med.medication_dosage);
 
         return res.status(200).json({
-            names: medicationNames,
-            dosages: medicationDosages,
+            medications
         });
     } catch (error) {
         console.error('Error fetching dosage comparison data:', error);
@@ -122,22 +112,30 @@ export const addVitals = async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        if (pulse !== undefined) user.pulserate = parseInt(pulse);
+        if (pulse !== undefined) {
+            if (user.pulserate.length < 5) {
+                user.pulserate.push({value:parseInt(pulse)})
+            } else {
+                user.pulserate.shift();
+                user.pulserate.push({value:parseInt(pulse)});
+            }
+        }
+
         if (systolic !== undefined) {
             if (user.Systolic.length < 5) {
-                user.Systolic.push(parseInt(systolic))
+                user.Systolic.push({value:parseInt(systolic)})
             } else {
                 user.Systolic.shift();
-                user.Systolic.push(parseInt(systolic));
+                user.Systolic.push({value:parseInt(systolic)});
             }
         }
 
         if (diastolic !== undefined) {
             if (user.Diastolic.length < 5) {
-                user.Diastolic.push(parseInt(diastolic))
+                user.Diastolic.push({value:parseInt(diastolic)})
             } else {
                 user.Diastolic.shift();
-                user.Diastolic.push(parseInt(diastolic));
+                user.Diastolic.push({value:parseInt(diastolic)});
             }
         }
 
@@ -155,6 +153,13 @@ export const addVitals = async (req, res) => {
     }
 }
 
+// helpers/dateHelper.js
+export const formatDate = (date) => {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(date).toLocaleDateString(undefined, options);
+  };
+  
+
 export const getVitals = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -164,12 +169,23 @@ export const getVitals = async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
+        const formatMeasurementArray = (measurements) => {
+            if (!measurements || measurements.length === 0) {
+              return [];
+            }
+      
+            return measurements.map((measurement) => ({
+              value: measurement.value,
+              date: formatDate(measurement.date), // Format the date
+            }));
+          };
+
         return res.status(201).json({
             success: true,
             message: "Vitals get successfully",
-            diastolic: user.Diastolic,
-            systolic: user.Systolic,
-            pulse: user.pulserate
+            diastolic: formatMeasurementArray(user.Diastolic),
+            systolic: formatMeasurementArray(user.Systolic),
+            pulse: formatMeasurementArray(user.pulserate)
         });
     } catch (error) {
         console.error("Error deleting expired medications:", error);
@@ -180,17 +196,49 @@ export const addBodyMeasurements = async (req, res) => {
     try {
 
         const { userId } = req.params;
-        const { weight, height, bmi, bodyFat, } = req.body;
+        const { weight, height, bmi, bmr, bodyFat,age } = req.body;
 
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
 
-        if (weight !== undefined) user.weight = parseInt(weight);
-        if (height !== undefined) user.height = parseInt(height);
-        if (bmi !== undefined) user.bmi = parseFloat(bmi);
-        if (bodyFat !== "") user.bodyfat = parseInt(bodyFat);
+        if (weight !== undefined)
+            if (user.weight.length < 7) {
+                user.weight.push({value:parseFloat(weight)})
+            } else {
+                user.weight.shift();
+                user.weight.push({value:parseFloat(weight)});
+            }
+
+        if (height !== undefined) user.height = parseFloat(height);
+        if (age !== undefined) user.age = parseFloat(age);
+
+        if (bmi !== undefined) {
+            if (user.bmi.length < 7) {
+                user.bmi.push({value:parseFloat(bmi)})
+            } else {
+                user.bmi.shift();
+                user.bmi.push({value:parseFloat(bmi)});
+            }
+        }
+        if (bodyFat !== undefined) {
+            if (user.bodyfat.length < 7) {
+                user.bodyfat.push({value:parseFloat(bodyFat)})
+            } else {
+                user.bodyfat.shift();
+                user.bodyfat.push({value:parseFloat(bodyFat)});
+            }
+        }
+
+        if (bmr !== undefined) {
+            if (user.bmr.length < 7) {
+                user.bmr.push({value:parseFloat(bmr)})
+            } else {
+                user.bmr.shift();
+                user.bmr.push({value:parseFloat(bmr)});
+            }
+        }
 
         await user.save();
 
@@ -208,24 +256,41 @@ export const addBodyMeasurements = async (req, res) => {
     }
 }
 
-export const getBodyMeasurements = async (req, res) => {
+  export const getBodyMeasurements = async (req, res) => {
     try {
-        const { userId } = req.params;
-
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
+      const { userId } = req.params;
+  
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      const formatMeasurementArray = (measurements) => {
+        if (!measurements || measurements.length === 0) {
+          return [];
         }
-
-        return res.status(201).json({
-            success: true,
-            message: "BodyMeasures get successfully",
-            weight: user.weight,
-            height: user.height,
-            bmi: user.bmi,
-            bodyFat: user.bodyfat
-        });
+  
+        return measurements.map((measurement) => ({
+          value: measurement.value,
+          date: formatDate(measurement.date), // Format the date
+        }));
+      };
+  
+      return res.status(201).json({
+        age: user.age,
+        success: true,
+        message: 'BodyMeasures get successfully',
+        weight: formatMeasurementArray(user.weight),
+        height: user.height,
+        bmi: formatMeasurementArray(user.bmi),
+        bmr: formatMeasurementArray(user.bmr),
+        bodyfat: formatMeasurementArray(user.bodyfat),
+        // Systolic: formatMeasurementArray(user.Systolic),
+        // Diastolic: formatMeasurementArray(user.Diastolic),
+        // pulserate: formatMeasurementArray(user.pulserate),
+      });
     } catch (error) {
-        console.error("Error deleting expired medications:", error);
+      console.error('Error getting body measurements:', error);
+      return res.status(500).json({ error: 'Internal server error' });
     }
-}
+  };

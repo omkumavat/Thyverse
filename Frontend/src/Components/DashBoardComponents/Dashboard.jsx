@@ -150,6 +150,12 @@ function Dashboard() {
           <p className="text-orange-300">John Doe - ID: 12345</p>
         </div>
         <div className="flex items-center gap-x-4 text-xl font-bold font-poppins">
+        <p
+            onClick={() => navigate("/dashboard/bodyinput")}
+            className="cursor-pointer"
+          >
+            My BodyMeasurements
+          </p>
           <p
             onClick={() => navigate("/dashboard/vitalinput")}
             className="cursor-pointer"

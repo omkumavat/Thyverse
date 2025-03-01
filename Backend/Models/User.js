@@ -18,32 +18,61 @@ const userSchema = new mongoose.Schema({
         default: 0
     },
     weight: {
-        type: Number,
-        default: 0
+        type: [{
+            value: { type: Number, default: 0 },
+            date: { type: Date, default: Date.now() }
+        }],
+        default: []
     },
     bodyfat: {
+        type: [{
+            value: { type: Number, default: 0 },
+            date: { type: Date, default: Date.now() }
+        }],
+        default: []
+    },
+    age: {
         type: Number,
         default: 0
     },
     bmi: {
-        type: Number,
-        default: 0
+        type: [{
+            value: { type: Number, default: 0 },
+            date: { type: Date, default: Date.now() }
+        }],
+        default: []
+    },
+    bmr: {
+        type: [{
+            value: { type: Number, default: 0 },
+            date: { type: Date, default: Date.now() }
+        }],
+        default: []
     },
     Systolic: {
-        type: [Number],
+        type: [{
+            value: { type: Number, default: 0 },
+            date: { type: Date, default: Date.now() }
+        }],
         default: []
     },
     Diastolic: {
-        type: [Number],
+        type: [{
+            value: { type: Number, default: 0 },
+            date: { type: Date, default: Date.now() }
+        }],
         default: []
     },
     pulserate: {
-        type: Number,
-        default: 0,
+        type: [{
+            value: { type: Number, default: 0 },
+            date: { type: Date, default: Date.now() }
+        }],
+        default: []
     },
-    medications_ids:{
-        type:[mongoose.Schema.ObjectId],
-        default:[]
+    medications_ids: {
+        type: [mongoose.Schema.ObjectId],
+        default: []
     }
 
 }, { timestamps: true });
