@@ -18,7 +18,7 @@ import { motion } from "framer-motion";
 import Contact from "../Images/contact.gif";
 import NavBar from "../Components/NavBar";
 import Footer from "../Components/Footer";
-
+import homeImage from "../Images/HomeImage.webp"
 const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
@@ -66,7 +66,7 @@ const Home = () => {
                 className="flex flex-col justify-center items-center gap-y-6 h-full"
               >
                 <img
-                  src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80"
+                  src={homeImage}
                   alt="Medical Technology"
                   className="rounded-lg shadow-xl w-full h-auto object-cover"
                 />

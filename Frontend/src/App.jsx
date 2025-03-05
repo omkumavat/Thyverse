@@ -13,7 +13,7 @@ import MedicationForm from "./Components/DashBoardComponents/MedicationForm";
 import ThyverseHome from "./Components/ThyverseHome";
 function App() {
   const { currentUser } = useAuth();
-  console.log(currentUser);
+  // console.log(currentUser);
 
   return (
     <Routes>

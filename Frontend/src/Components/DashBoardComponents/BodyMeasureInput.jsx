@@ -23,31 +23,32 @@ export default function BodyMeasureInput() {
   const [bmr, setBmr] = useState(0);
   const [bmiCategory, setBmiCategory] = useState("");
   const [fitnessTip, setFitnessTip] = useState("");
-  const [sevenDayBodyMeasures,setSevenDayBodyMeasures]=useState(null);
+  const [sevenDayBodyMeasures, setSevenDayBodyMeasures] = useState(null);
 
-  const [BodyMeasure, setBodyMeasure] = useState({
+  const [bodyMeasure, setBodyMeasure] = useState({
     age: "",
     weight: "",
     height: "",
     bodyFat: "",
-  })
+  });
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
-    setBodyMeasure((bodyMeasure) => ({ ...bodyMeasure, [id]: value }));
+    setBodyMeasure((prevBodyMeasure) => ({ ...prevBodyMeasure, [id]: value }));
   };
 
   const getCalculatedBMI = (weight, height) => {
-    const w = parseInt(weight);
-    const h = parseInt(height);
+    const w = parseFloat(weight);
+    const h = parseFloat(height);
+    if (isNaN(w) || isNaN(h) || h === 0) return 0;
     const heightInMeters = h / 100;
     return (w / (heightInMeters * heightInMeters)).toFixed(2);
   };
 
-
   const updateBMICategory = (bmiValue) => {
     let category = "";
     let tip = "";
+    
     if (bmiValue < 18.5) {
       category = "Underweight";
       tip = "Focus on a balanced diet with enough protein and healthy fats to gain muscle mass.";
@@ -61,40 +62,64 @@ export default function BodyMeasureInput() {
       category = "Obese";
       tip = "Consult a healthcare professional for personalized diet and exercise recommendations.";
     }
+    
     setBmiCategory(category);
     setFitnessTip(tip);
   };
 
-  const calculateBMR = (w, h, g,age) => {
-
-    h=parseFloat(w);
-    w=parseFloat(w);
-    age=parseInt(age);
+  const calculateBMR = (weight, height, g, age) => {
+    const w = parseFloat(weight);
+    const h = parseFloat(height);
+    const a = parseInt(age);
+    
+    if (isNaN(w) || isNaN(h) || isNaN(a)) return 0;
+    
     const bmrValue =
       g === "male"
-        ? (10 * w + 6.25 * h - 5 * age + 5).toFixed(2)
-        : (10 * w + 6.25 * h - 5 * age - 161).toFixed(2);
+        ? (10 * w + 6.25 * h - 5 * a + 5).toFixed(2)
+        : (10 * w + 6.25 * h - 5 * a - 161).toFixed(2);
+    
     return bmrValue;
   };
+
+  // Effect to update BMI and BMR when inputs change
+  useEffect(() => {
+    if (bodyMeasure.weight && bodyMeasure.height) {
+      const calculatedBmi = getCalculatedBMI(bodyMeasure.weight, bodyMeasure.height);
+      setBmi(calculatedBmi);
+      updateBMICategory(parseFloat(calculatedBmi));
+      
+      if (bodyMeasure.age) {
+        const calculatedBmr = calculateBMR(
+          bodyMeasure.weight, 
+          bodyMeasure.height, 
+          gender, 
+          bodyMeasure.age
+        );
+        setBmr(calculatedBmr);
+      }
+    }
+  }, [bodyMeasure, gender]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (BodyMeasure.weight && BodyMeasure.height) {
+    if (bodyMeasure.weight && bodyMeasure.height) {
       // Calculate BMI synchronously
-      const bmiValue = getCalculatedBMI(BodyMeasure.weight, BodyMeasure.height);
+      const bmiValue = getCalculatedBMI(bodyMeasure.weight, bodyMeasure.height);
+      const bmrValue = calculateBMR(
+        bodyMeasure.weight, 
+        bodyMeasure.height, 
+        gender, 
+        bodyMeasure.age
+      );
 
-      updateBMICategory(bmiValue);
-      const bmrValue = calculateBMR(BodyMeasure.weight,BodyMeasure.height, gender,BodyMeasure.age);
-
-      // Build the payload with the calculated BMI value
+      // Build the payload with the calculated values
       const payload = {
-        ...BodyMeasure,
+        ...bodyMeasure,
         bmi: bmiValue,
-        bmr:bmrValue
+        bmr: bmrValue
       };
-
-      console.log(payload)
 
       try {
         if (currentUser) {
@@ -107,14 +132,14 @@ export default function BodyMeasureInput() {
 
           if (response.data.success) {
             getBodyMeasures();
-            toast.success("Body Measurements Saved.. !");
+            toast.success("Body Measurements Saved!");
           } else {
-            toast.error("Failed to Save Body Measurements.. !");
+            toast.error("Failed to Save Body Measurements!");
           }
         }
       } catch (error) {
         console.log(error);
-        toast.error("Failed to Save Body Measurements.. !");
+        toast.error("Failed to Save Body Measurements!");
       }
     } else {
       toast.error("Please enter weight and height");
@@ -124,29 +149,40 @@ export default function BodyMeasureInput() {
   async function getBodyMeasures() {
     try {
       if (currentUser) {
-        const response = await axios.get(`http://localhost:4000/server/dashuser/get-body-measures/${currentUser._id}`);
+        const response = await axios.get(
+          `http://localhost:4000/server/dashuser/get-body-measures/${currentUser._id}`
+        );
+        
         if (response.data.success) {
           const data = response.data;
-          console.log(data);
+          console.log("Retrieved data:", data);
           
-          setBodyMeasure({
-            age: data.age,
-            height: data.height,
-          })
-          setBmr(data.bmr[data.bmr.length-1].value);
-          setBmi(data.bmi[data.bmi.length-1].value);
-          setSevenDayBodyMeasures(data)
-          updateBMICategory(parseInt(bmi));
+          // Only set these values if there's data
+          if (data.bmi && data.bmi.length > 0 && data.bmr && data.bmr.length > 0) {
+            setBodyMeasure({
+              age: data.age || "",
+              height: data.height || "",
+              weight: data.weight && data.weight.length > 0 ? data.weight[data.weight.length - 1].value : "",
+              bodyFat: data.bodyfat && data.bodyfat.length > 0 ? data.bodyfat[data.bodyfat.length - 1].value : ""
+            });
+            
+            setBmr(data.bmr[data.bmr.length - 1].value);
+            setBmi(data.bmi[data.bmi.length - 1].value);
+            updateBMICategory(parseFloat(data.bmi[data.bmi.length - 1].value));
+          }
+          
+          setSevenDayBodyMeasures(data);
         }
       }
     } catch (error) {
-      console.log(error);
+      console.log("Error fetching body measures:", error);
+      toast.error("Failed to fetch body measurements");
     }
   }
 
   useEffect(() => {
     getBodyMeasures();
-  }, [])
+  }, [currentUser]);
 
   const getBMICategoryColor = () => {
     switch (bmiCategory.toLowerCase()) {
@@ -163,7 +199,7 @@ export default function BodyMeasureInput() {
     }
   };
 
-  const InputField = ({ id, label, icon: Icon, value, onChange, readOnly = false, unit = "", type = "number" }) => (
+  const InputField = ({ id, label, icon: Icon, value, onChange, readOnly = false, unit = "", type = "text" }) => (
     <div className="bg-[#000042]/90 backdrop-blur-lg rounded-xl p-4 transition-all duration-300 hover:bg-[#000042]/95">
       <div className="flex items-center gap-3 mb-2">
         <Icon className="w-5 h-5 text-orange-400" />
@@ -172,6 +208,8 @@ export default function BodyMeasureInput() {
       <input
         id={id}
         type={type}
+        inputMode="numeric"
+        pattern="[0-9]*"
         className={`w-full bg-[#000042]/50 text-white p-3 rounded-lg border border-orange-400/20 focus:outline-none focus:ring-2 focus:ring-orange-400 transition-all duration-300 ${readOnly ? 'cursor-not-allowed' : ''}`}
         value={value}
         onChange={onChange}
@@ -182,50 +220,40 @@ export default function BodyMeasureInput() {
     </div>
   );
 
-  const data = [
-    { time: sevenDayBodyMeasures?.bmi[0]?.date,
-       BMI: sevenDayBodyMeasures?.bmi[0]?.value, 
-      BMR: sevenDayBodyMeasures?.bmr[0]?.value,
-      Weight: sevenDayBodyMeasures?.weight[0]?.value,
-      BodyFat: sevenDayBodyMeasures?.bodyfat[0]?.value,
-    },
-    { time:sevenDayBodyMeasures?.bmi[1]?.date,
-       BMI: sevenDayBodyMeasures?.bmi[1]?.value,
-       BMR: sevenDayBodyMeasures?.bmr[1]?.value, 
-       Weight: sevenDayBodyMeasures?.weight[1]?.value,
-       BodyFat: sevenDayBodyMeasures?.bodyfat[1]?.value,},
+  // Process the data for the chart
+  const prepareChartData = () => {
+    if (!sevenDayBodyMeasures) return [];
+    
+    // Ensure all required arrays exist
+    const bmiData = sevenDayBodyMeasures.bmi || [];
+    const bmrData = sevenDayBodyMeasures.bmr || [];
+    const weightData = sevenDayBodyMeasures.weight || [];
+    const bodyFatData = sevenDayBodyMeasures.bodyfat || [];
+    
+    // Get the maximum length
+    const maxLength = Math.max(
+      bmiData.length,
+      bmrData.length,
+      weightData.length,
+      bodyFatData.length
+    );
+    
+    const chartData = [];
+    
+    for (let i = 0; i < maxLength; i++) {
+      chartData.push({
+        time: i < bmiData.length ? bmiData[i].date : null,
+        BMI: i < bmiData.length ? parseFloat(bmiData[i].value) : null,
+        BMR: i < bmrData.length ? parseFloat(bmrData[i].value) : null,
+        Weight: i < weightData.length ? parseFloat(weightData[i].value) : null,
+        BodyFat: i < bodyFatData.length ? parseFloat(bodyFatData[i].value) : null,
+      });
+    }
+    
+    return chartData;
+  };
 
-    { time: sevenDayBodyMeasures?.bmi[2]?.date,
-       BMI: sevenDayBodyMeasures?.bmi[2]?.value,
-      BMR: sevenDayBodyMeasures?.bmr[2]?.value,
-      Weight: sevenDayBodyMeasures?.weight[2]?.value,
-      BodyFat: sevenDayBodyMeasures?.bodyfat[2]?.value,},
-
-    { time: sevenDayBodyMeasures?.bmi[3]?.date
-      , BMI: sevenDayBodyMeasures?.bmi[3]?.value, 
-      BMR: sevenDayBodyMeasures?.bmr[3]?.value,
-      Weight: sevenDayBodyMeasures?.weight[3]?.value,
-      BodyFat: sevenDayBodyMeasures?.bodyfat[3]?.value,},
-
-    { time:sevenDayBodyMeasures?.bmi[4]?.date
-      , BMI: sevenDayBodyMeasures?.bmi[4]?.value, 
-      BMR: sevenDayBodyMeasures?.bmr[4]?.value,
-      Weight: sevenDayBodyMeasures?.weight[4]?.value,
-      BodyFat: sevenDayBodyMeasures?.bodyfat[4]?.value,},
-
-      { time: sevenDayBodyMeasures?.bmi[5]?.date
-        , BMI: sevenDayBodyMeasures?.bmi[5]?.value, 
-        BMR: sevenDayBodyMeasures?.bmr[5]?.value,
-        Weight: sevenDayBodyMeasures?.weight[5]?.value,
-        BodyFat: sevenDayBodyMeasures?.bodyfat[5]?.value,},
-
-        { time: sevenDayBodyMeasures?.bmi[6]?.date
-          , BMI: sevenDayBodyMeasures?.bmi[6]?.value, 
-          BMR: sevenDayBodyMeasures?.bmr[6]?.value,
-          Weight: sevenDayBodyMeasures?.weight[6]?.value,
-          BodyFat: sevenDayBodyMeasures?.bodyfat[6]?.value,},
-  ];
-
+  const chartData = prepareChartData();
 
   return (
     <div>
@@ -251,20 +279,22 @@ export default function BodyMeasureInput() {
                     <div className="flex gap-4">
                       <button
                         type="button"
-                        className={`flex-1 py-3 px-6 rounded-lg transition-all duration-300 ${gender === "male"
-                          ? "bg-orange-500 text-white"
-                          : "bg-[#000042] text-white/70 hover:bg-[#000042]/80"
-                          }`}
+                        className={`flex-1 py-3 px-6 rounded-lg transition-all duration-300 ${
+                          gender === "male"
+                            ? "bg-orange-500 text-white"
+                            : "bg-[#000042] text-white/70 hover:bg-[#000042]/80"
+                        }`}
                         onClick={() => setGender("male")}
                       >
                         Male
                       </button>
                       <button
                         type="button"
-                        className={`flex-1 py-3 px-6 rounded-lg transition-all duration-300 ${gender === "female"
-                          ? "bg-orange-500 text-white"
-                          : "bg-[#000042] text-white/70"
-                          }`}
+                        className={`flex-1 py-3 px-6 rounded-lg transition-all duration-300 ${
+                          gender === "female"
+                            ? "bg-orange-500 text-white"
+                            : "bg-[#000042] text-white/70"
+                        }`}
                         onClick={() => setGender("female")}
                       >
                         Female
@@ -275,17 +305,16 @@ export default function BodyMeasureInput() {
                       id="weight"
                       label="Weight"
                       icon={Scale}
-                      value={BodyMeasure.weight}
+                      value={bodyMeasure.weight}
                       onChange={handleInputChange}
                       unit="kg"
                     />
-
 
                     <InputField
                       id="height"
                       label="Height"
                       icon={Ruler}
-                      value={BodyMeasure.height}
+                      value={bodyMeasure.height}
                       onChange={handleInputChange}
                       unit="cm"
                     />
@@ -294,7 +323,7 @@ export default function BodyMeasureInput() {
                       id="bodyFat"
                       label="Body Fat"
                       icon={Percent}
-                      value={BodyMeasure.bodyFat}
+                      value={bodyMeasure.bodyFat}
                       onChange={handleInputChange}
                       unit="%"
                     />
@@ -303,11 +332,10 @@ export default function BodyMeasureInput() {
                       id="age"
                       label="Age"
                       icon={Ruler}
-                      value={BodyMeasure.age}
+                      value={bodyMeasure.age}
                       onChange={handleInputChange}
                       unit="years"
                     />
-
                   </div>
                   <button
                     type="submit"
@@ -353,7 +381,7 @@ export default function BodyMeasureInput() {
               <h2 className="text-xl font-semibold mb-5 text-gray-50">Body Measures Trends</h2>
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={data}>
+                  <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="4 4" stroke="#4B5563" />
                     <XAxis
                       dataKey="time"
@@ -402,19 +430,19 @@ export default function BodyMeasureInput() {
                       type="monotone"
                       dataKey="BMI"
                       name="BMI"
-                      stroke="#FB923C"
+                      stroke="#22C55E"
                       strokeWidth={2.5}
-                      dot={{ r: 5, fill: '#FB953C' }}
-                      activeDot={{ r: 7, fill: '#FED6A' }}
+                      dot={{ r: 5, fill: '#22C55E' }}
+                      activeDot={{ r: 7, fill: '#86EFAC' }}
                     />
                     <Line
                       type="monotone"
                       dataKey="BodyFat"
-                      name="BodyFat"
-                      stroke="#FB923C"
+                      name="Body Fat"
+                      stroke="#3B82F6"
                       strokeWidth={2.5}
-                      dot={{ r: 5, fill: '#FB123C' }}
-                      activeDot={{ r: 7, fill: '#FED2AA' }}
+                      dot={{ r: 5, fill: '#3B82F6' }}
+                      activeDot={{ r: 7, fill: '#93C5FD' }}
                     />
                   </LineChart>
                 </ResponsiveContainer>

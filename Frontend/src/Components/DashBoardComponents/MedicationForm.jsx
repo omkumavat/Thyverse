@@ -1,22 +1,46 @@
 import React, { useEffect, useState } from "react";
 import { Pill, Activity, Clock } from "lucide-react";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
-import { Pie, Bar } from 'react-chartjs-2';
-import NavBar2 from '../NavBar2';
-import { Toaster, toast } from 'react-hot-toast';
-import { useAuth } from '../../Context/AuthProvider';
-import axios from 'axios';
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
-import useFetchUpdatedUser from '../../IMPFunctions/ProfileUpdation';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+} from "chart.js";
+import { Pie, Line } from "react-chartjs-2";
+import NavBar2 from "../NavBar2";
+import { Toaster, toast } from "react-hot-toast";
+import { useAuth } from "../../Context/AuthProvider";
+import axios from "axios";
+import MedicationList from "./MedicationList";
+
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title
+);
+import useFetchUpdatedUser from "../../IMPFunctions/ProfileUpdation";
 
 function MedicationForm() {
   const { currentUser } = useAuth();
+  const [mediactionData, setMedicationData] = useState("");
+  console.log(mediactionData);
+
   const [formData, setFormData] = useState({
-    medication: '',
-    dosage: '',
-    startDate: '',
-    duration: '',
-    times: [] // For checkbox selections
+    medication: "",
+    dosage: "",
+    startDate: "",
+    duration: "",
+    times: [], // For checkbox selections
   });
 
   const handleChange = (e) => {
@@ -30,7 +54,10 @@ function MedicationForm() {
     if (e.target.checked) {
       setFormData({ ...formData, times: [...currentTimes, value] });
     } else {
-      setFormData({ ...formData, times: currentTimes.filter((time) => time !== value) });
+      setFormData({
+        ...formData,
+        times: currentTimes.filter((time) => time !== value),
+      });
     }
   };
 
@@ -47,11 +74,11 @@ function MedicationForm() {
           fetchMediForGraph(); // Refresh the charts data
           // Reset form including checkboxes
           setFormData({
-            medication: '',
-            dosage: '',
-            startDate: '',
-            duration: '',
-            times: []
+            medication: "",
+            dosage: "",
+            startDate: "",
+            duration: "",
+            times: [],
           });
         } else {
           toast.error("Failed to save.. !");
@@ -65,64 +92,111 @@ function MedicationForm() {
   useFetchUpdatedUser();
 
   // Initialize pie chart state with empty details.
-  // "details" will hold an array of medication names per time slot.
   const [pieChartData, setPieChartData] = useState({
-    labels: ['Morning', 'Afternoon', 'Night'],
-    datasets: [{
-      data: [0, 0, 0],
-      details: [[], [], []],
-      backgroundColor: [
-        'rgba(255, 206, 86, 0.8)',
-        'rgba(75, 192, 192, 0.8)',
-        'rgba(54, 162, 235, 0.8)',
-      ],
-      borderColor: [
-        'rgba(255, 206, 86, 1)',
-        'rgba(75, 192, 192, 1)',
-        'rgba(54, 162, 235, 1)',
-      ],
-      borderWidth: 1,
-    }],
+    labels: ["Morning", "Afternoon", "Night"],
+    datasets: [
+      {
+        data: [0, 0, 0],
+        details: [[], [], []],
+        backgroundColor: [
+          "rgba(255, 206, 86, 0.8)",
+          "rgba(75, 192, 192, 0.8)",
+          "rgba(54, 162, 235, 0.8)",
+        ],
+        borderColor: [
+          "rgba(255, 206, 86, 1)",
+          "rgba(75, 192, 192, 1)",
+          "rgba(54, 162, 235, 1)",
+        ],
+        borderWidth: 1,
+      },
+    ],
   });
 
-  // Initialize bar chart state.
-  const [barChartData, setBarChartData] = useState({
-    labels: [],
-    datasets: [{
-      label: 'Medication Dosage',
-      data: [],
-      backgroundColor: 'rgba(255, 147, 47, 0.8)',
-      borderColor: 'rgba(255, 147, 47, 1)',
-      borderWidth: 1,
-    }],
+  // Initialize line chart state with days on x-axis and medications on y-axis
+  const [lineChartData, setLineChartData] = useState({
+    labels: [0, 30, 60, 90, 120, 150, 180], // Days from 0 to 180 in 30-day intervals
+    datasets: [],
   });
+
+  // Generate random color for each medication line
+  const generateRandomColor = () => {
+    const r = Math.floor(Math.random() * 255);
+    const g = Math.floor(Math.random() * 255);
+    const b = Math.floor(Math.random() * 255);
+    return [`rgba(${r}, ${g}, ${b}, 0.8)`, `rgba(${r}, ${g}, ${b}, 1)`];
+  };
 
   // Fetch medications and update both charts in one call.
+  async function fetchMedications() {
+    try{
+      if(currentUser){
+        const response = await axios.get(
+          `http://localhost:4000/server/dashuser/get-medi-graph/${currentUser._id}`
+        );
+        setMedicationData(response.data.medications);
+      }
+    }catch(error){
+      console.log(error);
+    }
+  }
+  useEffect(() => {
+    fetchMedications();
+  }, [currentUser]) 
   async function fetchMediForGraph() {
     try {
       if (currentUser) {
-        const response = await axios.get(`http://localhost:4000/server/dashuser/get-medi-graph/${currentUser._id}`);
-        // Assume response.data.medications is an array of medication objects.
+        const response = await axios.get(
+          `http://localhost:4000/server/dashuser/get-medi-graph/${currentUser._id}`
+        );
         const medications = response.data.medications;
-
-        // Aggregation for pie chart.
-        // We'll create a schedule object mapping time slots to an array of medication names.
         const schedule = {
           Morning: [],
           Afternoon: [],
-          Night: []
+          Night: [],
         };
 
-        // Aggregation for bar chart (for example, using medication names and dosages).
-        const names = [];
-        const dosages = [];
+        const lineDatasets = medications.map((med) => {
+          const [bgColor, borderColor] = generateRandomColor();
 
-        medications.forEach(med => {
-          names.push(med.medication_name);
-          dosages.push(med.medication_dosage);
-          // For each medication, add its name to each time slot in its schedule.
-          if (med.medication_schedule && Array.isArray(med.medication_schedule)) {
-            med.medication_schedule.forEach(time => {
+          const durationDays = parseInt(med.medication_duration) || 30;
+          const dosage = parseFloat(med.medication_dosage) || 0;
+
+          const dataPoints = [];
+          const xAxisPoints = [0, 30, 60, 90, 120, 150, 180];
+
+          xAxisPoints.forEach((day) => {
+            if (day <= durationDays) {
+              dataPoints.push(dosage);
+            } else {
+              dataPoints.push(null);
+            }
+          });
+
+          return {
+            label: med.medication_name,
+            data: dataPoints,
+            backgroundColor: bgColor,
+            borderColor: borderColor,
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 4,
+            spanGaps: false,
+          };
+        });
+
+        setLineChartData({
+          labels: [0, 30, 60, 90, 120, 150, 180],
+          datasets: lineDatasets,
+        });
+
+        medications.forEach((med) => {
+          if (
+            med.medication_schedule &&
+            Array.isArray(med.medication_schedule)
+          ) {
+            med.medication_schedule.forEach((time) => {
               if (schedule.hasOwnProperty(time)) {
                 schedule[time].push(med.medication_name);
               }
@@ -130,44 +204,29 @@ function MedicationForm() {
           }
         });
 
-        setBarChartData({
-          labels: names,
-          datasets: [{
-            label: 'Medication Dosage',
-            data: dosages,
-            backgroundColor: 'rgba(255, 147, 47, 0.8)',
-            borderColor: 'rgba(255, 147, 47, 1)',
-            borderWidth: 1,
-          }]
-        });
-
-        // Update the pie chart. The numeric data is the count of medications for each time slot,
-        // and the "details" property holds the actual medication names.
         setPieChartData({
-          labels: ['Morning', 'Afternoon', 'Night'],
-          datasets: [{
-            data: [
-              schedule.Morning.length,
-              schedule.Afternoon.length,
-              schedule.Night.length,
-            ],
-            details: [
-              schedule.Morning,
-              schedule.Afternoon,
-              schedule.Night,
-            ],
-            backgroundColor: [
-              'rgba(255, 206, 86, 0.8)',
-              'rgba(75, 192, 192, 0.8)',
-              'rgba(54, 162, 235, 0.8)',
-            ],
-            borderColor: [
-              'rgba(255, 206, 86, 1)',
-              'rgba(75, 192, 192, 1)',
-              'rgba(54, 162, 235, 1)',
-            ],
-            borderWidth: 1,
-          }]
+          labels: ["Morning", "Afternoon", "Night"],
+          datasets: [
+            {
+              data: [
+                schedule.Morning.length,
+                schedule.Afternoon.length,
+                schedule.Night.length,
+              ],
+              details: [schedule.Morning, schedule.Afternoon, schedule.Night],
+              backgroundColor: [
+                "rgba(255, 206, 86, 0.8)",
+                "rgba(75, 192, 192, 0.8)",
+                "rgba(54, 162, 235, 0.8)",
+              ],
+              borderColor: [
+                "rgba(255, 206, 86, 1)",
+                "rgba(75, 192, 192, 1)",
+                "rgba(54, 162, 235, 1)",
+              ],
+              borderWidth: 1,
+            },
+          ],
         });
       }
     } catch (error) {
@@ -187,7 +246,7 @@ function MedicationForm() {
       <Toaster position="top-right" reverseOrder={false} />
       <div className="min-h-screen bg-gradient-to-br from-orange-600 to-orange-400 p-8">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 mt-14">
-          <div className="bg-[#000042]/80 h-[110vh] rounded-xl p-6 shadow-lg font-poppins ">
+          <div className="bg-[#000042]/80 h-auto rounded-xl p-6 shadow-lg font-poppins ">
             <h2 className="text-2xl font-bold mb-6 text-white flex items-center">
               <Pill className="mr-2" /> Medication Form
             </h2>
@@ -269,7 +328,9 @@ function MedicationForm() {
                   />
                 </div>
                 <div className="bg-[#000042] p-4 rounded-md">
-                  <label className="block text-white mb-1">Duration (days)</label>
+                  <label className="block text-white mb-1">
+                    Duration (days)
+                  </label>
                   <input
                     type="number"
                     name="duration"
@@ -288,6 +349,9 @@ function MedicationForm() {
                 Submit Medication
               </button>
             </form>
+            <div>
+              <MedicationList medicationData={mediactionData} />
+            </div>
           </div>
 
           <div className="space-y-8 font-poppins">
@@ -301,20 +365,19 @@ function MedicationForm() {
                   options={{
                     maintainAspectRatio: false,
                     plugins: {
-                      legend: { labels: { color: 'white' } },
+                      legend: { labels: { color: "white" } },
                       tooltip: {
                         callbacks: {
-                          // On hover, show the medication names for that time slot.
-                          label: function(context) {
+                          label: function (context) {
                             const index = context.dataIndex;
                             const details = context.dataset.details[index];
                             return details && details.length > 0
-                              ? details.join(', ')
-                              : 'No medications';
-                          }
-                        }
-                      }
-                    }
+                              ? details.join(", ")
+                              : "No medications";
+                          },
+                        },
+                      },
+                    },
                   }}
                 />
               </div>
@@ -322,34 +385,47 @@ function MedicationForm() {
 
             <div className="bg-[#000042]/80 rounded-xl p-6 shadow-lg">
               <h3 className="text-xl font-semibold mb-4 text-white flex items-center">
-                <Activity className="mr-2" /> Weekly Adherence
+                <Activity className="mr-2" /> Medication Duration Timeline
               </h3>
               <div className="w-full h-[300px] flex items-center justify-center">
-                <Bar
-                  data={barChartData}
+                <Line
+                  data={lineChartData}
                   options={{
                     maintainAspectRatio: false,
                     scales: {
                       y: {
                         beginAtZero: true,
-                        max: 100,
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                        ticks: { color: 'white' },
+                        grid: { color: "rgba(255, 255, 255, 0.1)" },
+                        ticks: { color: "white" },
+                        title: {
+                          display: true,
+                          text: "Dosage (mg)",
+                          color: "white",
+                        },
                       },
                       x: {
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                        ticks: { color: 'white' },
+                        grid: { color: "rgba(255, 255, 255, 0.1)" },
+                        ticks: { color: "white" },
+                        title: {
+                          display: true,
+                          text: "Days",
+                          color: "white",
+                        },
                       },
                     },
                     plugins: {
-                      legend: { labels: { color: 'white' } },
+                      legend: {
+                        labels: { color: "white" },
+                        position: "top",
+                      },
                       tooltip: {
                         callbacks: {
                           label: function (context) {
-                            const label = context.dataset.label ? context.dataset.label + ': ' : '';
-                            return context.parsed.y !== null
-                              ? label + context.parsed.y + ' mg'
-                              : label;
+                            const value = context.parsed.y;
+                            if (value !== null) {
+                              return `${context.dataset.label}: ${value} mg`;
+                            }
+                            return `${context.dataset.label}: Not active`;
                           },
                         },
                       },

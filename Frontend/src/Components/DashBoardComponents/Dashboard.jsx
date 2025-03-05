@@ -22,6 +22,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import ThyroidLineChart from "./ThyroidLineChart";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthProvider";
 
@@ -82,8 +83,9 @@ function Dashboard() {
         `http://localhost:4000/server/dashuser/get-medi-graph/${currentUser._id}`
       );
       const data = response.data;
+      // console.log(data);
       // Assuming API returns an object like { names: [...], dosages: [...] }
-      const medData = data.names.map((name, index) => ({
+      const medData = data.medications.map((name, index) => ({
         name,
         value: data.dosages[index],
       }));
@@ -122,15 +124,6 @@ function Dashboard() {
         { name: "Body Fat %", value: bodyMeasures.bodyFat },
       ]
       : [];
-
-  // If no data is fetched yet, you can fall back to defaults (or show a loading state)
-  // const displayedVitals = [
-  //         { name: "Mon", sistolic: sistolic[0], diastolic: diastolic[0] },
-  //         { name: "Tue", sistolic: sistolic[1], diastolic: diastolic[1] },
-  //         { name: "Wed", sistolic: sistolic[2], diastolic: diastolic[2] },
-  //         { name: "Thu", sistolic: sistolic[3], diastolic: diastolic[3] },
-  //         { name: "Fri", sistolic: sistolic[4], diastolic: diastolic[4] },
-  //       ];
 
   const displayedVitals = [
     {
@@ -318,29 +311,7 @@ function Dashboard() {
           transition={{ delay: 0.6 }}
           className="bg-white p-6 rounded-xl shadow-lg"
         >
-          <div className="flex items-center gap-2 mb-4">
-            <Flask className="text-[#FF9F43]" />
-            <h2 className="text-xl font-semibold text-[#1B2B65]">
-              Thyroid Panel
-            </h2>
-          </div>
-          <div className="space-y-4">
-            {thyroidData.map((item) => (
-              <div key={item.name} className="flex items-center justify-between">
-                <span className="text-[#1B2B65] font-medium">
-                  {item.name}
-                </span>
-                <div className="flex items-center gap-4">
-                  <span className="text-[#FF9F43] font-bold">
-                    {item.value}
-                  </span>
-                  <span className="text-gray-500 text-sm">
-                    Range: {item.range}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <ThyroidLineChart thyroidData={thyroidData}/>
         </motion.div>
       </main>
     </div>

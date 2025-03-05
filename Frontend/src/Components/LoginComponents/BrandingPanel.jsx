@@ -1,5 +1,6 @@
 import { Heart } from 'lucide-react';
 import logo from "../../Images/logo.png"
+import loginpage from "../../Images/LoginPage.webp"
 export const BrandingPanel = () => (
   <div className="bg-navy p-12 font-poppins text-white md:w-2/5 flex flex-col justify-center items-center relative overflow-hidden h-screen md:h-auto" 
        style={{ backgroundColor: '#1B3168' }}>
@@ -12,7 +13,7 @@ export const BrandingPanel = () => (
         Your health is our priority. Join us in revolutionizing healthcare access and management.
       </p>
       <img
-        src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=500"
+        src={loginpage}
         alt="Healthcare"
         className="rounded-lg w-full max-w-md shadow-lg transform transition-transform hover:scale-105"
       />
