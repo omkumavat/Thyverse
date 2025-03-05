@@ -15,7 +15,7 @@ import { Activity, Scale, Ruler, Percent, Heart, Flame } from "lucide-react";
 import NavBar2 from "../NavBar2";
 import { useAuth } from "../../Context/AuthProvider";
 import axios from "axios";
-
+import DashNavbar from "./DashNavbar";
 export default function BodyMeasureInput() {
   const { currentUser } = useAuth();
   const [bmi, setBmi] = useState(0);
@@ -257,7 +257,7 @@ export default function BodyMeasureInput() {
 
   return (
     <div>
-      <NavBar2 />
+      <DashNavbar />
       <motion.div
         className="min-h-screen bg-gradient-to-br from-orange-500 to-orange-300 p-8 font-poppins"
         initial={{ opacity: 0 }}
@@ -266,7 +266,7 @@ export default function BodyMeasureInput() {
       >
         <Toaster position="top-right" reverseOrder={false} />
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-14">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
             <motion.div
               className="space-y-6"
               initial={{ x: -20, opacity: 0 }}

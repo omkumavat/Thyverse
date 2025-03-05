@@ -17,7 +17,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { useAuth } from "../../Context/AuthProvider";
 import axios from "axios";
 import MedicationList from "./MedicationList";
-
+import DashNavbar from "./DashNavbar";
 ChartJS.register(
   ArcElement,
   Tooltip,
@@ -243,11 +243,11 @@ function MedicationForm() {
   return (
     <div>
       <div>
-        <NavBar2 />
+        <DashNavbar />
       </div>
       <Toaster position="top-right" reverseOrder={false} />
       <div className="min-h-screen bg-gradient-to-br from-orange-600 to-orange-400 p-8">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 mt-14">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 ">
           <div className="bg-[#000042]/80 h-auto rounded-xl p-6 shadow-lg font-poppins ">
             <h2 className="text-2xl font-bold mb-6 text-white flex items-center">
               <Pill className="mr-2" /> Medication Form

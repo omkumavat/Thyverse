@@ -17,6 +17,7 @@ import {
 } from "recharts";
 import { useAuth } from "../../Context/AuthProvider";
 import { ReferenceLine } from "recharts";
+import DashNavbar from "./DashNavbar";
 function VitalInput() {
   const { currentUser } = useAuth();
   const [systolicArr, setsystolicArr] = useState([]);
@@ -130,11 +131,11 @@ function VitalInput() {
 
   return (
     <div className="bg-gradient-to-br from-orange-600 via-orange-500 to-orange-300 min-h-screen text-gray-100 font-sans">
-      <NavBar2 />
+      <DashNavbar/>
       <Toaster position="top-right" reverseOrder={false} />
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 font-poppins gap-8 mt-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 font-poppins gap-8 mt-2">
           {/* Main Content Area */}
           <div className="lg:col-span-2">
             <div className="bg-gray-900 bg-opacity-90 rounded-xl shadow-2xl p-6 border border-indigo-900 hover:shadow-orange-500/20 transition-shadow duration-300">

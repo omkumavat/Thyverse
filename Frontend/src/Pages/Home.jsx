@@ -18,7 +18,7 @@ import { motion } from "framer-motion";
 import Contact from "../Images/contact.gif";
 import NavBar from "../Components/NavBar";
 import Footer from "../Components/Footer";
-import homeImage from "../Images/HomeImage.webp"
+import homeImage from "../Images/HomeImage.webp";
 const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
@@ -40,10 +40,10 @@ const Home = () => {
                 initial={{ opacity: 0, x: -50 }}
                 transition={{ duration: 1.5 }}
                 viewport={{ once: false, amount: 0.2 }}
-                className="flex flex-col justify-center items-center gap-y-6 h-full"
+                className="flex flex-col justify-center items-stretch gap-y-6 h-full flex-grow"
               >
                 {/* Content Box */}
-                <div className="bg-white text-gray-900 p-6 md:p-8 rounded-lg shadow-lg flex flex-col gap-y-4 min-h-[400px] h-full">
+                <div className="bg-white text-gray-900 p-6 md:p-8 rounded-lg shadow-lg flex flex-col gap-y-4 h-full">
                   <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-cyan-600">
                     Revolutionary Thyroid Diagnosis Through Thermal Technology
                   </h1>
@@ -65,13 +65,13 @@ const Home = () => {
                 viewport={{ once: false, amount: 0.2 }}
                 className="flex flex-col justify-center items-center gap-y-6 h-full"
               >
-                <img
-                  src={homeImage}
-                  alt="Medical Technology"
-                  className="rounded-lg shadow-xl w-full h-auto object-cover"
-                />
-                {/* Optional Gradient Overlay for Better Contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-lg"></div>
+                <div className="relative w-full max-h-[500px] flex justify-center">
+                  <img
+                    src={homeImage}
+                    alt="Medical Technology"
+                    className="rounded-lg shadow-xl w-full h-auto max-h-[500px] object-contain"
+                  />
+                </div>
               </motion.div>
             </div>
           </div>
@@ -160,7 +160,9 @@ const Home = () => {
                   ].map((item, index) => (
                     <li key={index} className="flex items-center gap-3">
                       <CheckCircle className="w-5 h-5 text-green-700 " />
-                      <span className="font-poppins text-xl text-white">{item}</span>
+                      <span className="font-poppins text-xl text-white">
+                        {item}
+                      </span>
                     </li>
                   ))}
                 </ul>

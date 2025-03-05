@@ -37,7 +37,6 @@ const thyroidData = [
 function Dashboard() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-
   // State variables for data fetched from the API
   const [vitals, setVitals] = useState([]);
   const [medications, setMedications] = useState([]);
@@ -45,15 +44,18 @@ function Dashboard() {
   const [diastolic, setDiastolic] = useState([]);
   const [sistolic, setSistolic] = useState([]);
   const [pulserate, setPulserate] = useState([]);
-
+  console.log(531654145, bodyMeasures)
   // Fetch data when currentUser is available
   useEffect(() => {
-    if (currentUser) {
-      getBodyMeasures(currentUser);
-      getVitals(currentUser);
-      fetchMediForGraph(currentUser);
-    }
+    if (!currentUser) return;
+    getBodyMeasures(currentUser);
+    getVitals(currentUser);
+    fetchMediForGraph(currentUser);
   }, [currentUser]);
+  const chartData = medications.map((med) => ({
+    name: med.medication_name,
+    value: med.medication_dosage,
+  }));
 
   // Fetch Body Measurements and update state
   async function getBodyMeasures(currentUser) {
@@ -63,11 +65,12 @@ function Dashboard() {
       );
       if (response.data.success) {
         const data = response.data;
+        console.log("211111", data);
         setBodyMeasures({
           height: data.height,
-          weight: data.weight,
-          bodyFat: data.bodyFat,
-          bmi: data.bmi,
+          weight: data.weight?.at(-1).value || 0, // Get last element or default to 0
+          bodyFat: data.bodyFat?.at(-1) || 0, // Handle undefined cases
+          bmi: data.bmi?.at(-1).value || 0,
         });
         // Optionally update BMI category or calculate BMR here
       }
@@ -83,13 +86,8 @@ function Dashboard() {
         `http://localhost:4000/server/dashuser/get-medi-graph/${currentUser._id}`
       );
       const data = response.data;
-      // console.log(data);
+      setMedications(data.medications);
       // Assuming API returns an object like { names: [...], dosages: [...] }
-      const medData = data.medications.map((name, index) => ({
-        name,
-        value: data.dosages[index],
-      }));
-      setMedications(medData);
     } catch (error) {
       console.log(error);
     }
@@ -105,7 +103,7 @@ function Dashboard() {
         // Assuming the API returns a vitals array like:
         // [{ name: "Mon", bp: 120, pulse: 72 }, ...]
         console.log(response.data.diastolic);
-        setPulserate(response.data.pulse)
+        setPulserate(response.data.pulse);
         setSistolic(response.data.systolic);
         setDiastolic(response.data.diastolic);
       }
@@ -118,45 +116,45 @@ function Dashboard() {
   const displayedBodyMeasures =
     Object.keys(bodyMeasures).length > 0
       ? [
-        { name: "Weight", value: bodyMeasures.weight },
-        { name: "Height", value: bodyMeasures.height },
-        { name: "BMI", value: bodyMeasures.bmi },
-        { name: "Body Fat %", value: bodyMeasures.bodyFat },
-      ]
+          { name: "Weight", value: bodyMeasures.weight },
+          { name: "Height", value: bodyMeasures.height },
+          { name: "BMI", value: bodyMeasures.bmi },
+          { name: "Body Fat %", value: bodyMeasures.bodyFat },
+        ]
       : [];
 
   const displayedVitals = [
     {
-      time: sistolic[0]?.date, systolic: sistolic[0]?.value, diastolic: diastolic[0]?.value,
-      pulse: pulserate[0]?.value
+      time: sistolic[0]?.date,
+      systolic: sistolic[0]?.value,
+      diastolic: diastolic[0]?.value,
+      pulse: pulserate[0]?.value,
     },
     {
-      time: sistolic[1]?.date, systolic: sistolic[1]?.value, diastolic: diastolic[1]?.value,
-      pulse: pulserate[1]?.value
+      time: sistolic[1]?.date,
+      systolic: sistolic[1]?.value,
+      diastolic: diastolic[1]?.value,
+      pulse: pulserate[1]?.value,
     },
     {
-      time: sistolic[2]?.date, systolic: sistolic[2]?.value, diastolic: diastolic[2]?.value,
-      pulse: pulserate[2]?.value
+      time: sistolic[2]?.date,
+      systolic: sistolic[2]?.value,
+      diastolic: diastolic[2]?.value,
+      pulse: pulserate[2]?.value,
     },
     {
-      time: sistolic[3]?.date, systolic: sistolic[3]?.value, diastolic: diastolic[3]?.value,
-      pulse: pulserate[3]?.value
+      time: sistolic[3]?.date,
+      systolic: sistolic[3]?.value,
+      diastolic: diastolic[3]?.value,
+      pulse: pulserate[3]?.value,
     },
     {
-      time: sistolic[4]?.date, systolic: sistolic[4]?.value, diastolic: diastolic[4]?.value,
-      pulse: pulserate[4]?.value
+      time: sistolic[4]?.date,
+      systolic: sistolic[4]?.value,
+      diastolic: diastolic[4]?.value,
+      pulse: pulserate[4]?.value,
     },
   ];
-
-  const displayedMedications =
-    medications.length > 0
-      ? medications
-      : [
-        { name: "Metformin", value: 35 },
-        { name: "Lisinopril", value: 25 },
-        { name: "Aspirin", value: 20 },
-        { name: "Vitamin D", value: 20 },
-      ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -205,43 +203,43 @@ function Dashboard() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="time"
-                tick={{ fontSize: 12, fill: '#D1D5DB' }}
+                tick={{ fontSize: 12, fill: "#D1D5DB" }}
                 tickMargin={10}
                 stroke="#6B7280"
               />
               <YAxis
-                tick={{ fontSize: 12, fill: '#D1D5DB' }}
+                tick={{ fontSize: 12, fill: "#D1D5DB" }}
                 tickMargin={10}
                 stroke="#6B7280"
               />
               <Tooltip />
               <Line
-                                   type="monotone"
-                                   dataKey="systolic"
-                                   name="Systolic"
-                                   stroke="#F97316"
-                                   strokeWidth={2.5}
-                                   dot={{ r: 5, fill: '#F97316' }}
-                                   activeDot={{ r: 7, fill: '#FDBA74' }}
-                                 />
-                                 <Line
-                                   type="monotone"
-                                   dataKey="diastolic"
-                                   name="Diastolic"
-                                   stroke="#FB923C"
-                                   strokeWidth={2.5}
-                                   dot={{ r: 5, fill: '#FB923C' }}
-                                   activeDot={{ r: 7, fill: '#FED7AA' }}
-                                 />
-                                 <Line
-                                   type="monotone"
-                                   dataKey="pulse"
-                                   name="PulseRate"
-                                   stroke="#FB923C"
-                                   strokeWidth={2.5}
-                                   dot={{ r: 5, fill: '#FB923C' }}
-                                   activeDot={{ r: 7, fill: '#FED7AA' }}
-                                 />
+                type="monotone"
+                dataKey="systolic"
+                name="Systolic"
+                stroke="#F97316"
+                strokeWidth={2.5}
+                dot={{ r: 5, fill: "#F97316" }}
+                activeDot={{ r: 7, fill: "#FDBA74" }}
+              />
+              <Line
+                type="monotone"
+                dataKey="diastolic"
+                name="Diastolic"
+                stroke="#FB923C"
+                strokeWidth={2.5}
+                dot={{ r: 5, fill: "#FB923C" }}
+                activeDot={{ r: 7, fill: "#FED7AA" }}
+              />
+              <Line
+                type="monotone"
+                dataKey="pulse"
+                name="PulseRate"
+                stroke="#FB923C"
+                strokeWidth={2.5}
+                dot={{ r: 5, fill: "#FB923C" }}
+                activeDot={{ r: 7, fill: "#FED7AA" }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </motion.div>
@@ -260,15 +258,15 @@ function Dashboard() {
             </h2>
           </div>
           <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
+            <PieChart width={400} height={400}>
               <Pie
-                data={displayedMedications}
+                data={chartData} // Use transformed data
                 innerRadius={60}
                 outerRadius={80}
                 paddingAngle={5}
                 dataKey="value"
               >
-                {displayedMedications.map((entry, index) => (
+                {chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
@@ -311,7 +309,7 @@ function Dashboard() {
           transition={{ delay: 0.6 }}
           className="bg-white p-6 rounded-xl shadow-lg"
         >
-          <ThyroidLineChart thyroidData={thyroidData}/>
+          <ThyroidLineChart thyroidData={thyroidData} />
         </motion.div>
       </main>
     </div>
