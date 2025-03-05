@@ -3,13 +3,14 @@ import { Pencil, Trash2, X } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../Context/AuthProvider';
+import DeleteModalMedication from './DeleteModalMedication';
 
 // Modal Component for Editing Medication
-const EditMedicationModal = ({ medication, isOpen, onClose, onUpdate }) => {
+const EditMedicationModal = ({ medication, isOpen, onClose, onUpdate, onUpdate2 }) => {
   const [editData, setEditData] = useState({
     medication: medication.medication_name,
     dosage: medication.medication_dosage,
-    startDate: medication.start_date ? medication.start_date.split('T')[0] : '',
+    startDate: medication.medication_date ? medication.medication_date.split('T')[0] : '',
     duration: medication.medication_duration,
     times: medication.medication_schedule || []
   });
@@ -22,13 +23,13 @@ const EditMedicationModal = ({ medication, isOpen, onClose, onUpdate }) => {
   const handleCheckboxChange = (e) => {
     const value = e.target.value;
     const currentTimes = editData.times;
-    
+
     if (e.target.checked) {
       setEditData(prev => ({ ...prev, times: [...currentTimes, value] }));
     } else {
-      setEditData(prev => ({ 
-        ...prev, 
-        times: currentTimes.filter((time) => time !== value) 
+      setEditData(prev => ({
+        ...prev,
+        times: currentTimes.filter((time) => time !== value)
       }));
     }
   };
@@ -37,20 +38,28 @@ const EditMedicationModal = ({ medication, isOpen, onClose, onUpdate }) => {
     e.preventDefault();
     try {
       const response = await axios.put(
-        `http://localhost:4000/server/dashuser/update-medi/${medication._id}`, 
+        `http://localhost:4000/server/dashuser/update-medi/${medication._id}`,
         {
-          medication_name: editData.medication,
-          medication_dosage: editData.dosage,
-          start_date: editData.startDate,
-          medication_duration: editData.duration,
-          medication_schedule: editData.times
+          medication: editData.medication,
+          dosage: editData.dosage,
+          startDate: editData.startDate,
+          duration: editData.duration,
+          times: editData.times
         }
       );
 
       if (response.data.success) {
         toast.success('Medication updated successfully!');
-        onUpdate(); // Refresh the medication list
-        onClose(); // Close the modal
+        onUpdate();
+        onUpdate2();
+        setEditData({
+          medication: "",
+          dosage: "",
+          startDate: "",
+          duration: "",
+          times: ""
+        })
+        onClose();
       } else {
         toast.error('Failed to update medication');
       }
@@ -60,19 +69,32 @@ const EditMedicationModal = ({ medication, isOpen, onClose, onUpdate }) => {
     }
   };
 
+  useEffect(() => {
+    if (medication) {
+      setEditData({
+        medication: medication.medication_name,
+        dosage: medication.medication_dosage,
+        startDate: medication.medication_date ? medication.medication_date.split('T')[0] : '',
+        duration: medication.medication_duration,
+        times: medication.medication_schedule || []
+      });
+    }
+  }, [medication]);
+
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-[#000042] rounded-xl p-8 w-full max-w-md relative">
-        <button 
-          onClick={onClose} 
+        <button
+          onClick={onClose}
           className="absolute top-4 right-4 text-white hover:text-gray-300"
         >
           <X size={24} />
         </button>
         <h2 className="text-2xl font-bold mb-6 text-white">Edit Medication</h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-white mb-1">Medication Name</label>
@@ -154,29 +176,16 @@ const EditMedicationModal = ({ medication, isOpen, onClose, onUpdate }) => {
   );
 };
 
-// Medication List Component
-const MedicationList = ({medicationData}) => {
+const MedicationList = ({ fetchMediForGraph, medicationData, fetchMedications }) => {
   const { currentUser } = useAuth();
   const [medications, setMedications] = useState([]);
-  console.log("123",medicationData);
   const [selectedMedication, setSelectedMedication] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const handleDelete = async (medicationId) => {
-    try {
-      const response = await axios.delete(`http://localhost:4000/server/dashuser/delete-medi/${medicationId}`);
-      
-      if (response.data.success) {
-        toast.success('Medication deleted successfully!');
-        fetchMedications(); // Refresh the list
-      } else {
-        toast.error('Failed to delete medication');
-      }
-    } catch (error) {
-      console.error('Error deleting medication:', error);
-      toast.error('Error deleting medication');
-    }
+  const openDeleteModal = (medication) => {
+    setSelectedMedication(medication);
+    setIsDeleteModalOpen(true);
   };
 
   const handleEdit = (medication) => {
@@ -188,65 +197,74 @@ const MedicationList = ({medicationData}) => {
     if (medicationData) {
       setMedications(medicationData);
     }
-  }, [medicationData]); 
-  
+  }, [medicationData]);
+
 
   return (
     <div className="bg-[#000042]/80 rounded-xl p-6 shadow-lg mt-8">
       <h3 className="text-xl font-semibold mb-4 text-white">Medication List</h3>
       <div>
         {medications.length === 0 ? (
-            <p className="text-white text-center">No medications added yet</p>
+          <p className="text-white text-center">No medications added yet</p>
         ) : (
-            <div className="overflow-x-auto">
+          <div className="overflow-x-auto">
             <table className="w-full text-white">
-                <thead>
+              <thead>
                 <tr className="border-b border-orange-400">
-                    <th className="py-2 text-left">Medication</th>
-                    <th className="py-2 text-left">Dosage</th>
-                    <th className="py-2 text-left">Schedule</th>
-                    <th className="py-2 text-left">Duration</th>
-                    <th className="py-2 text-center">Actions</th>
+                  <th className="py-2 text-left">Medication</th>
+                  <th className="py-2 text-left">Dosage</th>
+                  <th className="py-2 text-left">Schedule</th>
+                  <th className="py-2 text-left">Duration</th>
+                  <th className="py-2 text-center">Actions</th>
                 </tr>
-                </thead>
-                <tbody>
+              </thead>
+              <tbody>
                 {medications.map((med) => (
-                    <tr key={med._id} className="border-b border-gray-700 hover:bg-[#000042]/50">
+                  <tr key={med._id} className="border-b border-gray-700 hover:bg-[#000042]/50">
                     <td className="py-3">{med.medication_name}</td>
                     <td className="py-3">{med.medication_dosage} mg</td>
                     <td className="py-3">{med.medication_schedule.join(', ')}</td>
                     <td className="py-3">{med.medication_duration} days</td>
                     <td className="py-3 flex justify-center space-x-4">
-                        <button 
+                      <button
                         onClick={() => handleEdit(med)}
                         className="text-blue-400 hover:text-blue-300"
-                        >
+                      >
                         <Pencil size={20} />
-                        </button>
-                        <button 
-                        onClick={() => handleDelete(med._id)}
+                      </button>
+                      <button
+                        onClick={() => openDeleteModal(med)}
                         className="text-red-400 hover:text-red-300"
-                        >
+                      >
                         <Trash2 size={20} />
-                        </button>
+                      </button>
                     </td>
-                    </tr>
+                  </tr>
                 ))}
-                </tbody>
+              </tbody>
             </table>
-            </div>
+          </div>
         )}
       </div>
 
       {/* Edit Modal */}
       {selectedMedication && (
-        <EditMedicationModal 
+        <EditMedicationModal
           medication={selectedMedication}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onUpdate={fetchMedications}
+          onUpdate2={fetchMediForGraph}
         />
       )}
+
+      <DeleteModalMedication
+      onUpdate={fetchMedications}
+      onUpdate2={fetchMediForGraph}
+        isDeleteOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        medication={selectedMedication}
+      />
     </div>
   );
 };

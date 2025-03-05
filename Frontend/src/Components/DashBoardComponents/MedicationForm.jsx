@@ -129,20 +129,22 @@ function MedicationForm() {
 
   // Fetch medications and update both charts in one call.
   async function fetchMedications() {
-    try{
-      if(currentUser){
+    try {
+      if (currentUser) {
         const response = await axios.get(
           `http://localhost:4000/server/dashuser/get-medi-graph/${currentUser._id}`
         );
+        console.log(response.data.medications)
         setMedicationData(response.data.medications);
       }
-    }catch(error){
+    } catch (error) {
       console.log(error);
     }
   }
+
   useEffect(() => {
     fetchMedications();
-  }, [currentUser]) 
+  }, [])
   async function fetchMediForGraph() {
     try {
       if (currentUser) {
@@ -350,7 +352,7 @@ function MedicationForm() {
               </button>
             </form>
             <div>
-              <MedicationList medicationData={mediactionData} />
+              <MedicationList fetchMediForGraph={fetchMediForGraph} fetchMedications={fetchMedications} medicationData={mediactionData} />
             </div>
           </div>
 
