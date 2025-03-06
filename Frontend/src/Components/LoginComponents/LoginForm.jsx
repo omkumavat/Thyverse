@@ -19,7 +19,7 @@ const LoginForm = ({ onToggleAuth }) => {
     e.preventDefault();
     try {
       // Send login request along with email and password
-      const res = await axios.post('thyverse-api.vercel.app/user/login-user', { email, password });
+      const res = await axios.post('https://thyverse.vercel.app/user/login-user', { email, password });
 
       if (res.data.success) {
         // Assuming your response includes user data in res.data.user

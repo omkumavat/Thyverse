@@ -23,7 +23,7 @@ const SignupForm = ({ onToggleAuth }) => {
     setError("");
     try {
       const res = await axios.post(
-        "thyverse-api.vercel.app/user/signup-user",
+        "https://thyverse.vercel.app/user/signup-user",
         {
           name: fullName,
           email,

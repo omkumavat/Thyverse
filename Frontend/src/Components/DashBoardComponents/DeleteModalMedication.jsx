@@ -18,7 +18,7 @@ const DeleteModalMedication = ({
     e.preventDefault();
     if (confirmText.toLowerCase() === (medication.medication_name + ' remove')) {
       try {
-        const response = await axios.delete(`thyverse-api.vercel.app/dashuser/delete-medi/${currentUser._id}/${medication._id}`);
+        const response = await axios.delete(`https://thyverse.vercel.app/dashuser/delete-medi/${currentUser._id}/${medication._id}`);
         console.log(response.data.success);
         onUpdate();
         onUpdate2();

@@ -38,7 +38,7 @@ const EditMedicationModal = ({ medication, isOpen, onClose, onUpdate, onUpdate2 
     e.preventDefault();
     try {
       const response = await axios.put(
-        `thyverse-api.vercel.app/dashuser/update-medi/${medication._id}`,
+        `https://thyverse.vercel.app/dashuser/update-medi/${medication._id}`,
         {
           medication: editData.medication,
           dosage: editData.dosage,
