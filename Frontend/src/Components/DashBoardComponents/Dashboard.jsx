@@ -61,7 +61,7 @@ function Dashboard() {
   async function getBodyMeasures(currentUser) {
     try {
       const response = await axios.get(
-        `https://thyverse.vercel.app/dashuser/get-body-measures/${currentUser._id}`
+        `https://thyverse.vercel.app/server/dashuser/get-body-measures/${currentUser._id}`
       );
       if (response.data.success) {
         const data = response.data;
@@ -83,7 +83,7 @@ function Dashboard() {
   async function fetchMediForGraph(currentUser) {
     try {
       const response = await axios.get(
-        `https://thyverse.vercel.app/dashuser/get-medi-graph/${currentUser._id}`
+        `https://thyverse.vercel.app/server/dashuser/get-medi-graph/${currentUser._id}`
       );
       const data = response.data;
       setMedications(data.medications);
@@ -97,7 +97,7 @@ function Dashboard() {
   async function getVitals(currentUser) {
     try {
       const response = await axios.get(
-        `https://thyverse.vercel.app/dashuser/get-vitals/${currentUser._id}`
+        `https://thyverse.vercel.app/server/dashuser/get-vitals/${currentUser._id}`
       );
       if (response.data.success) {
         // Assuming the API returns a vitals array like:

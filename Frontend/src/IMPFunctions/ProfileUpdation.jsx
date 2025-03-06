@@ -12,7 +12,7 @@ const useFetchUpdatedUser = () => {
           console.log("No valid user ID found");
           return;
         }
-        const response = await axios.get(`https://thyverse.vercel.app/user/get-user/${currentUser._id}`);
+        const response = await axios.get(`https://thyverse.vercel.app/server/user/get-user/${currentUser._id}`);
         console.log("Response data:", response.data?.data);
         if (response.status === 200 && response.data?.data) {
           await updateProfile(response.data.data);
