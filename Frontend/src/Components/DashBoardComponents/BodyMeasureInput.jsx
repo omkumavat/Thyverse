@@ -125,7 +125,7 @@ export default function BodyMeasureInput() {
         if (currentUser) {
           console.log("Payload to send:", payload);
           const response = await axios.post(
-            `http://localhost:4000/server/dashuser/add-body-measures/${currentUser._id}`,
+            `thyverse-api.vercel.app/dashuser/add-body-measures/${currentUser._id}`,
             payload
           );
           console.log("Response:", response);
@@ -150,7 +150,7 @@ export default function BodyMeasureInput() {
     try {
       if (currentUser) {
         const response = await axios.get(
-          `http://localhost:4000/server/dashuser/get-body-measures/${currentUser._id}`
+          `thyverse-api.vercel.app/dashuser/get-body-measures/${currentUser._id}`
         );
         
         if (response.data.success) {

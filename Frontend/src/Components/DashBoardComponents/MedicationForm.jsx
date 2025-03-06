@@ -66,7 +66,7 @@ function MedicationForm() {
     try {
       if (currentUser) {
         const response = await axios.post(
-          `http://localhost:4000/server/dashuser/add-medi/${currentUser._id}`,
+          `thyverse-api.vercel.app/dashuser/add-medi/${currentUser._id}`,
           formData
         );
         if (response.data.success) {
@@ -132,7 +132,7 @@ function MedicationForm() {
     try {
       if (currentUser) {
         const response = await axios.get(
-          `http://localhost:4000/server/dashuser/get-medi-graph/${currentUser._id}`
+          `thyverse-api.vercel.app/dashuser/get-medi-graph/${currentUser._id}`
         );
         console.log(response.data.medications)
         setMedicationData(response.data.medications);
@@ -149,7 +149,7 @@ function MedicationForm() {
     try {
       if (currentUser) {
         const response = await axios.get(
-          `http://localhost:4000/server/dashuser/get-medi-graph/${currentUser._id}`
+          `thyverse-api.vercel.app/dashuser/get-medi-graph/${currentUser._id}`
         );
         const medications = response.data.medications;
         const schedule = {

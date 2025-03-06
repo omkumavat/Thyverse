@@ -49,7 +49,7 @@ function VitalInput() {
     try {
       if (currentUser) {
         const response = await axios.post(
-          `http://localhost:4000/server/dashuser/add-vitals/${currentUser._id}`,
+          `thyverse-api.vercel.app/dashuser/add-vitals/${currentUser._id}`,
           vitals
         );
         if (response.data.success) {
@@ -74,7 +74,7 @@ function VitalInput() {
     try {
       if (currentUser) {
         const response = await axios.get(
-          `http://localhost:4000/server/dashuser/get-vitals/${currentUser._id}`
+          `thyverse-api.vercel.app/dashuser/get-vitals/${currentUser._id}`
         );
         if (response.data.success) {
           console.log(response.data.pulse);
