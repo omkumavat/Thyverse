@@ -1,17 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import {
-  Thermometer,
   Microscope,
   Target,
-  Shield,
-  Activity,
-  Users,
   CheckCircle,
   ArrowRight,
-  Menu,
-  X,
 } from "lucide-react";
-import logo from "../Images/logo.png";
 import ServiceCard from "../Components/ServiceCard";
 import Throat from "../Images/Throa.jpg";
 import { motion } from "framer-motion";
@@ -20,7 +13,6 @@ import NavBar from "../Components/NavBar";
 import Footer from "../Components/Footer";
 import homeImage from "../Images/HomeImage.webp";
 const Home = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
     <>
       <div className="min-h-screen bg-white">

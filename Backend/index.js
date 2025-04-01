@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
     res.send('Hello World')
 })
 
-app.listen(4000, () => {
-    console.log("app is listening on port 4000");
-});
+// app.listen(4000, () => {
+//     console.log("app is listening on port 4000");
+// });
 export default app;
