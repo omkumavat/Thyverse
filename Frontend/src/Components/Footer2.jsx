@@ -8,7 +8,7 @@ const Footer2=()=>{
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <img src={logo} height={56} width={56}/>
-                                <span className="font-bold font-poppins text-3xl">ThyVerse</span>
+                        <span className="font-bold font-poppins text-3xl">ThyVerse</span>
                             </div>
                             <div className="text-gray-400">
                                 © 2025 Thyverse. All rights reserved.

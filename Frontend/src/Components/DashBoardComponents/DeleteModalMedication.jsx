@@ -16,7 +16,9 @@ const DeleteModalMedication = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (confirmText.toLowerCase() === (medication.medication_name + ' remove')) {
+    console.log(confirmText);
+    
+    if (confirmText === (medication.medication_name + ' remove')) {
       try {
         const response = await axios.delete(`https://thyverse-backend.vercel.app/server/dashuser/delete-medi/${currentUser._id}/${medication._id}`);
         console.log(response.data.success);
@@ -89,7 +91,7 @@ const DeleteModalMedication = ({
             </button>
             <button
               type="submit"
-              disabled={confirmText.toLowerCase() !== `${medication.medication_name} remove`}
+              disabled={confirmText !== `${medication.medication_name} remove`}
               className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Remove

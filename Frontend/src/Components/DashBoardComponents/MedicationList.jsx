@@ -51,7 +51,7 @@ const EditMedicationModal = ({ medication, isOpen, onClose, onUpdate, onUpdate2 
       if (response.data.success) {
         toast.success('Medication updated successfully!');
         onUpdate();
-        onUpdate2();
+        // onUpdate2();
         setEditData({
           medication: "",
           dosage: "",
@@ -254,13 +254,13 @@ const MedicationList = ({ fetchMediForGraph, medicationData, fetchMedications })
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onUpdate={fetchMedications}
-          onUpdate2={fetchMediForGraph}
+          // onUpdate2={fetchMediForGraph}
         />
       )}
 
       <DeleteModalMedication
       onUpdate={fetchMedications}
-      onUpdate2={fetchMediForGraph}
+      // onUpdate2={fetchMediForGraph}
         isDeleteOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         medication={selectedMedication}
