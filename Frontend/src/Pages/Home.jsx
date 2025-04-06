@@ -1,21 +1,21 @@
-import React, { useState } from "react";
+import React,{useState} from "react";
 import {
-  Thermometer,
   Microscope,
   Target,
-  Shield,
-  Activity,
-  Users,
   CheckCircle,
   ArrowRight,
   Menu,
+  Users,
+  Activity,
+  Thermometer,
+  Shield,
+
   X,
   Calendar,
   Heart,
   Clock,
   MessageCircle,
 } from "lucide-react";
-import logo from "../Images/logo.png";
 import ServiceCard from "../Components/ServiceCard";
 import Throat from "../Images/Throa.jpg";
 import { motion } from "framer-motion";
@@ -814,7 +814,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+      <Footer/>
     </div>
+    // <></>
   );
 };
 export default Home;
