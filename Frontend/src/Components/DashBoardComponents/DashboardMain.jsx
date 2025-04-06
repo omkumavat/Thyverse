@@ -5,7 +5,9 @@ import Medications from './Medications';
 import Measurements from './Measurements';
 import Vitals from './Vitals';
 import SettingsPanel from './SettingsPanel';
-import ThyroidPanel from "./ThyroidPanel"
+import ThyroidPanel from "./ThyroidPanel";
+import NavBar from "../NavBar";
+
 const DashboardMain = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -26,73 +28,80 @@ const DashboardMain = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <div className="p-6"><Dashboard/></div>;
+        return <Dashboard />;
       case 'medications':
-        return <div className="p-6"><Medications/></div>;
+        return <Medications />;
       case 'measurements':
-        return <div className="p-6"><Measurements/></div>;
+        return <Measurements />;
       case 'vitals':
-        return <div className="p-6"><Vitals/></div>;
+        return <Vitals />;
       case 'thyroid':
-        return <div className="p-6"><ThyroidPanel/></div>;
+        return <ThyroidPanel />;
       case 'settings':
-        return <div className="p-6"><SettingsPanel/></div>;
+        return <SettingsPanel />;
       default:
-        return <div className="p-6"><Dashboard/></div>;
+        return <Dashboard />;
     }
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Mobile hamburger menu button */}
-      <div className="md:hidden fixed top-0 left-0 p-4 z-20">
-        <button 
-          onClick={toggleSidebar}
-          className="p-2 bg-white rounded-md shadow-md"
-        >
-          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+    <div className="flex flex-col h-screen">
+      {/* Navbar remains fixed at the top */}
+      <div className="fixed top-0 left-0 w-full z-30 bg-white shadow-md">
+        <NavBar />
       </div>
 
-      {/* Sidebar navigation */}
-      <div 
-        className={`fixed md:relative w-64 h-full bg-white shadow-md z-10 transition-all duration-300 ${
-          isSidebarOpen ? 'left-0' : '-left-64 md:left-0'
-        }`}
-      >
-        <div className="p-4 border-b">
-          <h1 className="text-xl font-bold text-blue-600">Health Dashboard</h1>
+      <div className="flex flex-1 pt-16 bg-gray-100">
+        {/* Mobile hamburger menu button */}
+        <div className="md:hidden fixed top-4 left-4 z-20">
+          <button 
+            onClick={toggleSidebar}
+            className="p-2 bg-white rounded-md shadow-md"
+          >
+            {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
 
-        <nav className="p-4">
-          <ul>
-            {navItems.map((item) => (
-              <li key={item.id} className="mb-2">
-                <button
-                  onClick={() => {
-                    setActiveTab(item.id);
-                    if (window.innerWidth < 768) {
-                      setIsSidebarOpen(false);
-                    }
-                  }}
-                  className={`flex items-center w-full p-3 rounded-md transition-colors ${
-                    activeTab === item.id
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'hover:bg-gray-100'
-                  }`}
-                >
-                  <span className="mr-3">{item.icon}</span>
-                  {item.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
+        {/* Sidebar navigation */}
+        <div 
+          className={`fixed md:relative w-64 h-full bg-white shadow-md z-10 transition-all duration-300 ${
+            isSidebarOpen ? 'left-0' : '-left-64 md:left-0'
+          }`}
+        >
+          <div className="p-4 border-b">
+            <h1 className="text-xl font-bold text-blue-600">Health Dashboard</h1>
+          </div>
 
-      {/* Main content area */}
-      <div className="flex-1 overflow-auto ml-0 md:ml-64 pt-16 md:pt-0">
-        {renderTabContent()}
+          <nav className="p-4">
+            <ul>
+              {navItems.map((item) => (
+                <li key={item.id} className="mb-2">
+                  <button
+                    onClick={() => {
+                      setActiveTab(item.id);
+                      if (window.innerWidth < 768) {
+                        setIsSidebarOpen(false);
+                      }
+                    }}
+                    className={`flex items-center w-full p-3 rounded-md transition-colors ${
+                      activeTab === item.id
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'hover:bg-gray-100'
+                    }`}
+                  >
+                    <span className="mr-3">{item.icon}</span>
+                    {item.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+
+        {/* Main content area */}
+        <div className="flex-1 overflow-auto ml-0  p-6">
+          {renderTabContent()}
+        </div>
       </div>
 
       {/* Overlay for mobile */}

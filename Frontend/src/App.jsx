@@ -12,11 +12,12 @@ import Vitals from "./Components/DashBoardComponents/Vitals";
 import Measurements from "./Components/DashBoardComponents/Measurements";
 import Medications from "./Components/DashBoardComponents/Medications"
 import ThyverseHome from "./Components/ThyverseHome";
-import Nutritionmain from "./Components/Nutrition/Nutritionmain";
+// import Nutritionmain from "./Components/Nutrition/Nutritionmain";
 import FoodLogger from "./Components/Nutrition/FoodLogger";
 import MealPlanner from "./Components/Nutrition/MealPlanner";
 import Progress from "./Components/Nutrition/Progress";
-import UserProfile from "./Components/Nutrition/UserProfile"
+import UserProfile from "./Components/Nutrition/UserProfile";
+import NutriNavigation from "./Components/Nutrition/NutriNvaigation";
 function App() {
   const { currentUser } = useAuth();
   // console.log(currentUser);
@@ -40,7 +41,7 @@ function App() {
       <Route path="/thyverse/dashboard/medication" element={<Medications/>}/>
       <Route path="/thyverse" element={<ThyverseHome/>}/>
       <Route path="/thyverse/about" element={<About2/>}/>
-      <Route path="/nutrition" element={<Nutritionmain/>}></Route>
+      <Route path="/nutrition" element={<NutriNavigation/>}></Route>
       <Route path="/nutrition/progress" element={<Progress/>}></Route>
       <Route path="/nutrition/mealplanner" element={<MealPlanner/>}></Route>
       <Route path="/nutrition/foodlogger" element={<FoodLogger/>}></Route>
