@@ -6,6 +6,7 @@ import cors from 'cors';
 import connectDB from "./Database/MongoDBConnect.js";
 import UserRoute from './Routes/UserRoute.js'
 import DashBoardUserRoute from './Routes/DashBoardUserRoute.js'
+import Contact from './Routes/Contact.js'
 
 const app = express();
 app.use(bodyParser.json({ limit: '100mb' })); // Adjust the limit as needed
@@ -23,12 +24,13 @@ app.use(cors({
 
 app.use('/server/user',UserRoute);
 app.use('/server/dashuser',DashBoardUserRoute)
+app.use('/server/contact',Contact)
 
 app.get('/', (req, res) => {
     res.send('Hello World')
 })
 
-// app.listen(4000, () => {
-//     console.log("app is listening on port 4000");
-// });
+app.listen(4000, () => {
+    console.log("app is listening on port 4000");
+});
 export default app;
