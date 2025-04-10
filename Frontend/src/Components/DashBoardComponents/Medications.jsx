@@ -118,7 +118,7 @@ const Medications = () => {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-      <div className="space-y-8 animate-in">
+      <div className="space-y-8 mt-16 animate-in">
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold mb-4">Add New Medication</h2>
           <div className="grid gap-4 md:grid-cols-3">

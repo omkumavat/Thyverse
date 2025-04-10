@@ -147,7 +147,7 @@ const Measurements = () => {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-      <div className="space-y-8 animate-in">
+      <div className="space-y-8 mt-16 animate-in">
         <div className="grid gap-6 md:grid-cols-2">
           {/* Measurements Form */}
           <div className="bg-card p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">

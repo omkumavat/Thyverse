@@ -34,7 +34,7 @@ const SettingsPanel = () => {
 
   return (
     
-    <div className="space-y-8 animate-in">
+    <div className="space-y-8 mt-16 animate-in">
       <div className="max-w-2xl">
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold mb-4">Profile Settings</h2>

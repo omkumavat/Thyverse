@@ -11,7 +11,7 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+    <div className="max-w-2xl mt-16 mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
       <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
         <User className="w-8 h-8 text-primary" />
         Profile Settings

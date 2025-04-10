@@ -24,7 +24,6 @@ import NavBar from "../Components/NavBar";
 import Footer from "../Components/Footer";
 import homeImage from "../Images/HomeImage.webp";
 import { Phone, Mail, MapPin } from "lucide-react";
-import HomeContact from "../Components/HomeComponents/HomeContact";
 const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const iconMap = {
@@ -66,6 +65,11 @@ const Home = () => {
     });
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form submitted:", formData);
+    alert("Form submitted successfully!");
+  };
 
   return (
     <div className="w-full overflow-x-hidden font-sans bg-gray-50">
@@ -548,13 +552,13 @@ const Home = () => {
                 </div>
               </div>
 
-              <button className="mt-8 bg-[#5050ff] text-white hover:bg-[#4040ee] px-6 py-3 rounded-lg font-medium transition-all shadow-md flex items-center">
+              {/* <button className="mt-8 bg-[#5050ff] text-white hover:bg-[#4040ee] px-6 py-3 rounded-lg font-medium transition-all shadow-md flex items-center">
                 Learn About Our Technology{" "}
                 <ArrowRight className="ml-2 w-4 h-4" />
-              </button>
+              </button> */}
             </motion.div>
 
-            <motion.div
+            {/* <motion.div
               whileInView={{ opacity: 1, x: 0 }}
               initial={{ opacity: 0, x: 30 }}
               transition={{ duration: 0.7 }}
@@ -580,7 +584,7 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </motion.div> */}
           </div>
         </div>
       </section>
@@ -687,7 +691,126 @@ const Home = () => {
               </div>
             </motion.div>
 
-            <HomeContact/>
+            <motion.div
+              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 30 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              viewport={{ once: false, amount: 0.2 }}
+            >
+              <div className="bg-white p-8 rounded-xl shadow-xl">
+                <h3 className="text-2xl font-bold mb-6 text-[#18184e]">
+                  Request a Consultation
+                </h3>
+                <form
+                  className="space-y-4 bg-white p-6 rounded-lg shadow-md"
+                  onSubmit={handleSubmit}
+                >
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        placeholder="Your name"
+                        className="mt-1 p-2 w-full border rounded-md"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="Your email"
+                        className="mt-1 p-2 w-full border rounded-md"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="Your phone number"
+                      className="mt-1 p-2 w-full border rounded-md"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      How can we help?
+                    </label>
+                    <select
+                      name="help"
+                      value={formData.help}
+                      onChange={handleChange}
+                      className="mt-1 p-2 w-full border rounded-md"
+                      required
+                    >
+                      <option value="">Select an option</option>
+                      <option value="Book a thermal scan">
+                        Book a thermal scan
+                      </option>
+                      <option value="Consult with a specialist">
+                        Consult with a specialist
+                      </option>
+                      <option value="General inquiry">General inquiry</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Message
+                    </label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      placeholder="Tell us more about your concerns"
+                      className="mt-1 p-2 w-full border rounded-md"
+                      rows="4"
+                      required
+                    ></textarea>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="terms"
+                      checked={formData.terms}
+                      onChange={handleChange}
+                      className="mr-2"
+                      required
+                    />
+                    <label className="text-sm text-gray-700">
+                      I agree to the privacy policy and terms of service
+                    </label>
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
+                  >
+                    Submit
+                  </button>
+                  <p className="text-xs text-gray-500 text-center mt-4">
+                    We'll get back to you within 24 hours. Your information is
+                    secure and will never be shared.
+                  </p>
+                </form>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>

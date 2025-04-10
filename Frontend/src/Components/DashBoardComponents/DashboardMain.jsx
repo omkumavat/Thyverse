@@ -1,48 +1,51 @@
-import React, { useState } from 'react';
-import { Menu, X, Home, Pill, Ruler, Activity, LineChart, Settings } from 'lucide-react';
-import Dashboard from './Dashboard';
-import Medications from './Medications';
-import Measurements from './Measurements';
-import Vitals from './Vitals';
-import SettingsPanel from './SettingsPanel';
+import React, { useState } from "react";
+import {
+  Menu,
+  X,
+  Home,
+  Pill,
+  Ruler,
+  Activity,
+  LineChart,
+  Settings,
+} from "lucide-react";
+import { NavLink, useLocation } from "react-router-dom";
+import Dashboard from "./Dashboard";
+import Medications from "./Medications";
+import Measurements from "./Measurements";
+import Vitals from "./Vitals";
+import SettingsPanel from "./SettingsPanel";
 import ThyroidPanel from "./ThyroidPanel";
 import NavBar from "../NavBar";
 
 const DashboardMain = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  // Set the active tab based on the current path whenever location changes
+  React.useEffect(() => {
+    const path = location.pathname;
+    if (path.includes("medication")) {
+      setActiveTab("medications");
+    } else if (path.includes("measurement")) {
+      setActiveTab("measurements");
+    } else if (path.includes("vitalinput")) {
+      setActiveTab("vitals");
+    } else if (path.includes("thyroidpanel")) {
+      setActiveTab("thyroid");
+    } else if (path.includes("settings")) {
+      setActiveTab("settings");
+    } else if (path.includes("dashboard")) {
+      setActiveTab("dashboard");
+    }
+  }, [location]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: <Home size={20} /> },
-    { id: 'medications', label: 'Medications', icon: <Pill size={20} /> },
-    { id: 'measurements', label: 'Measurements', icon: <Ruler size={20} /> },
-    { id: 'vitals', label: 'Vitals', icon: <Activity size={20} /> },
-    { id: 'thyroid', label: 'Thyroid Panel', icon: <LineChart size={20} /> },
-    { id: 'settings', label: 'Settings', icon: <Settings size={20} /> },
-  ];
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'medications':
-        return <Medications />;
-      case 'measurements':
-        return <Measurements />;
-      case 'vitals':
-        return <Vitals />;
-      case 'thyroid':
-        return <ThyroidPanel />;
-      case 'settings':
-        return <SettingsPanel />;
-      default:
-        return <Dashboard />;
-    }
-  };
 
   return (
     <div className="flex flex-col h-screen">
@@ -54,7 +57,7 @@ const DashboardMain = () => {
       <div className="flex flex-1 pt-16 bg-gray-100">
         {/* Mobile hamburger menu button */}
         <div className="md:hidden fixed top-4 left-4 z-20">
-          <button 
+          <button
             onClick={toggleSidebar}
             className="p-2 bg-white rounded-md shadow-md"
           >
@@ -63,50 +66,161 @@ const DashboardMain = () => {
         </div>
 
         {/* Sidebar navigation */}
-        <div 
+        <div
           className={`fixed md:relative w-64 h-full bg-white shadow-md z-10 transition-all duration-300 ${
-            isSidebarOpen ? 'left-0' : '-left-64 md:left-0'
+            isSidebarOpen ? "left-0" : "-left-64 md:left-0"
           }`}
         >
           <div className="p-4 border-b">
-            <h1 className="text-xl font-bold text-blue-600">Health Dashboard</h1>
+            <h1 className="text-xl font-bold text-blue-600">
+              Health Dashboard
+            </h1>
           </div>
 
           <nav className="p-4">
             <ul>
-              {navItems.map((item) => (
-                <li key={item.id} className="mb-2">
-                  <button
-                    onClick={() => {
-                      setActiveTab(item.id);
-                      if (window.innerWidth < 768) {
-                        setIsSidebarOpen(false);
-                      }
-                    }}
-                    className={`flex items-center w-full p-3 rounded-md transition-colors ${
-                      activeTab === item.id
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'hover:bg-gray-100'
-                    }`}
-                  >
-                    <span className="mr-3">{item.icon}</span>
-                    {item.label}
-                  </button>
-                </li>
-              ))}
+              <li className="mb-2">
+                <NavLink
+                  to="/thyverse/dashboard"
+                  className={`flex items-center w-full p-3 rounded-md transition-colors ${
+                    activeTab === "dashboard"
+                      ? "bg-blue-100 text-blue-700"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => {
+                    setActiveTab("dashboard");
+                    if (window.innerWidth < 768) {
+                      setIsSidebarOpen(false);
+                    }
+                  }}
+                  end 
+                >
+                  <span className="mr-3">
+                    <Home size={20} />
+                  </span>
+                  Dashboard
+                </NavLink>
+              </li>
+
+              <li className="mb-2">
+                <NavLink
+                  to="/thyverse/dashboard/medication"
+                  className={`flex items-center w-full p-3 rounded-md transition-colors ${
+                    activeTab === "medications"
+                      ? "bg-blue-100 text-blue-700"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => {
+                    setActiveTab("medications");
+                    if (window.innerWidth < 768) {
+                      setIsSidebarOpen(false);
+                    }
+                  }}
+                >
+                  <span className="mr-3">
+                    <Pill size={20} />
+                  </span>
+                  Medications
+                </NavLink>
+              </li>
+
+              <li className="mb-2">
+                <NavLink
+                  to="/thyverse/dashboard/measurement"
+                  className={`flex items-center w-full p-3 rounded-md transition-colors ${
+                    activeTab === "measurements"
+                      ? "bg-blue-100 text-blue-700"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => {
+                    setActiveTab("measurements");
+                    if (window.innerWidth < 768) {
+                      setIsSidebarOpen(false);
+                    }
+                  }}
+                >
+                  <span className="mr-3">
+                    <Ruler size={20} />
+                  </span>
+                  Measurements
+                </NavLink>
+              </li>
+
+              <li className="mb-2">
+                <NavLink
+                  to="/thyverse/dashboard/vitalinput"
+                  className={`flex items-center w-full p-3 rounded-md transition-colors ${
+                    activeTab === "vitals"
+                      ? "bg-blue-100 text-blue-700"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => {
+                    setActiveTab("vitals");
+                    if (window.innerWidth < 768) {
+                      setIsSidebarOpen(false);
+                    }
+                  }}
+                >
+                  <span className="mr-3">
+                    <Activity size={20} />
+                  </span>
+                  Vitals
+                </NavLink>
+              </li>
+
+              <li className="mb-2">
+                <NavLink
+                  to="/thyverse/dashboard/thyroidpanel"
+                  className={`flex items-center w-full p-3 rounded-md transition-colors ${
+                    activeTab === "thyroid"
+                      ? "bg-blue-100 text-blue-700"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => {
+                    setActiveTab("thyroid");
+                    if (window.innerWidth < 768) {
+                      setIsSidebarOpen(false);
+                    }
+                  }}
+                >
+                  <span className="mr-3">
+                    <LineChart size={20} />
+                  </span>
+                  Thyroid Panel
+                </NavLink>
+              </li>
+
+              <li className="mb-2">
+                <NavLink
+                  to="/thyverse/dashboard/settings"
+                  className={`flex items-center w-full p-3 rounded-md transition-colors ${
+                    activeTab === "settings"
+                      ? "bg-blue-100 text-blue-700"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => {
+                    setActiveTab("settings");
+                    if (window.innerWidth < 768) {
+                      setIsSidebarOpen(false);
+                    }
+                  }}
+                >
+                  <span className="mr-3">
+                    <Settings size={20} />
+                  </span>
+                  Settings
+                </NavLink>
+              </li>
             </ul>
           </nav>
         </div>
 
-        {/* Main content area */}
-        <div className="flex-1 overflow-auto ml-0  p-6">
-          {renderTabContent()}
-        </div>
+       
       </div>
 
-      {/* Overlay for mobile */}
+    
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-0 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />

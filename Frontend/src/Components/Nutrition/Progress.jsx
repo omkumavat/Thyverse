@@ -27,7 +27,7 @@ const Progress = () => {
     { date: "2024-03-01", target: 2000, actual: 2000 },
   ];
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-16">
       <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
         Progress Tracking
       </h1>

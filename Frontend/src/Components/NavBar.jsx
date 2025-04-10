@@ -56,12 +56,14 @@ const NavBar = () => {
               >
                 Products
               </a>
-              <a
-                href="/nutrition"
-                className="text-gray-200 font-poppins px-4 py-2 rounded-md transition-all hover:bg-[#303f9f] hover:text-white hover:scale-105"
-              >
-                Ndashboard
-              </a>
+              {currentUser && (
+                <a
+                  href="/thyverse/nutrition"
+                  className="text-gray-200 font-poppins px-4 py-2 rounded-md transition-all hover:bg-[#303f9f] hover:text-white hover:scale-105"
+                >
+                  Ndashboard
+                </a>
+              )}
               {currentUser && (
                 <a
                   href="/thyverse/dashboard"

@@ -35,7 +35,7 @@ const Dashboard = () => {
   );
 
   return (
-    <div className="space-y-8 animate-in">
+    <div className="space-y-8 mt-16 animate-in">
       {/* <p>hello</p> */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <StatCard title="Active Medications" value={patient.medications.length.toString()} icon={Pills} />
