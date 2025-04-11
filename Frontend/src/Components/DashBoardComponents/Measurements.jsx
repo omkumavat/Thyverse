@@ -95,6 +95,35 @@ const Measurements = () => {
         payload
       );
       if (response.data.success) {
+        // Store measurements in localStorage
+        const measurementsData = {
+          weight: numericWeight,
+          height: numericHeight,
+          age: numericAge,
+          gender,
+          bmi: parseFloat(bmi.toFixed(1)),
+          bmr: Math.round(bmr),
+          bmiCategory,
+          date: new Date().toISOString()
+        };
+        
+        // Get existing measurements from localStorage
+        const existingMeasurements = JSON.parse(localStorage.getItem('measurements')) || [];
+        
+        // Add new measurement to the array
+        existingMeasurements.push(measurementsData);
+        
+        // Save back to localStorage
+        localStorage.setItem('measurements', JSON.stringify(existingMeasurements));
+        
+        // Also update patientSettings in localStorage to keep weight and height in sync
+        const patientSettings = JSON.parse(localStorage.getItem('patientSettings')) || {};
+        patientSettings.weight = numericWeight;
+        patientSettings.height = numericHeight;
+        patientSettings.age = numericAge;
+        patientSettings.gender = gender;
+        localStorage.setItem('patientSettings', JSON.stringify(patientSettings));
+        
         toast.success("Measurements submitted successfully!");
         // Optionally, re-fetch the latest data after submitting.
         getBodyMeasures();
@@ -103,7 +132,36 @@ const Measurements = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Submission failed. Please try again.");
+      // Even if backend save fails, store in localStorage as fallback
+      const measurementsData = {
+        weight: numericWeight,
+        height: numericHeight,
+        age: numericAge,
+        gender,
+        bmi: parseFloat(bmi.toFixed(1)),
+        bmr: Math.round(bmr),
+        bmiCategory,
+        date: new Date().toISOString()
+      };
+      
+      // Get existing measurements from localStorage
+      const existingMeasurements = JSON.parse(localStorage.getItem('measurements')) || [];
+      
+      // Add new measurement to the array
+      existingMeasurements.push(measurementsData);
+      
+      // Save back to localStorage
+      localStorage.setItem('measurements', JSON.stringify(existingMeasurements));
+      
+      // Also update patientSettings in localStorage
+      const patientSettings = JSON.parse(localStorage.getItem('patientSettings')) || {};
+      patientSettings.weight = numericWeight;
+      patientSettings.height = numericHeight;
+      patientSettings.age = numericAge;
+      patientSettings.gender = gender;
+      localStorage.setItem('patientSettings', JSON.stringify(patientSettings));
+      
+      toast.success("Measurements saved to local storage!");
     }
     setLoading(false);
   };

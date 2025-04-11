@@ -5,50 +5,36 @@ import { toast } from 'react-hot-toast';
 import { useAuth } from '../../Context/AuthProvider';
 
 const DeleteModalMedication = ({
-  isDeleteOpen,
+  isOpen,
   onClose,
   medication,
-  onUpdate,
-  onUpdate2
+  onConfirm
 }) => {
   const { currentUser } = useAuth();
   const [confirmText, setConfirmText] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log(confirmText);
-    
-    if (confirmText === (medication.medication_name + ' remove')) {
-      try {
-        const response = await axios.delete(`https://thyverse-backend.vercel.app/server/dashuser/delete-medi/${currentUser._id}/${medication._id}`);
-        console.log(response.data.success);
-        onUpdate();
-        onUpdate2();
-        toast.success("Medication removed successfuly")
-      } catch (error) {
-        toast.error("Failed to removed Medication successfuly")
-      }
-      setConfirmText('');
-      onClose();
-    } else {
-      setToast({ success: false, message: 'Please confirm deletion' });
-    }
-  };
-
-
+  const [medName, setMedName] = useState('');
 
   useEffect(() => {
     if (medication) {
-      // setEditData({
-      //   medication: medication.medication_name,
-      //   dosage: medication.medication_dosage,
-      //   startDate: medication.medication_date ? medication.medication_date.split('T')[0] : '',
-      //   duration: medication.medication_duration,
-      //   times: medication.medication_schedule || []
-      // });
+      // Get the medication name from either server or localStorage format
+      const name = medication.medication_name || medication.name || '';
+      setMedName(name);
     }
   }, [medication]);
-  if (!isDeleteOpen) return null;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (confirmText === (medName + ' remove')) {
+      // Call the onConfirm function passed from parent
+      onConfirm(medication);
+      setConfirmText('');
+    } else {
+      toast.error('Please confirm deletion with the correct text');
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -65,10 +51,10 @@ const DeleteModalMedication = ({
 
         <div className="mb-6">
           <p className="text-gray-600 mb-4">
-            Are you sure you want to remove <span className="font-semibold">{medication.medication_name} Medication</span>? This action cannot be undone.
+            Are you sure you want to remove <span className="font-semibold">{medName} Medication</span>? This action cannot be undone.
           </p>
           <p className="text-sm text-gray-500">
-            Type <span className="font-mono font-semibold text-red-400">{medication.medication_name} remove</span> to confirm
+            Type <span className="font-mono font-semibold text-red-400">{medName} remove</span> to confirm
           </p>
         </div>
 
@@ -77,7 +63,7 @@ const DeleteModalMedication = ({
             type="text"
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
-            placeholder="Type 'delete' to confirm"
+            placeholder={`Type "${medName} remove" to confirm`}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
           />
 
@@ -91,7 +77,7 @@ const DeleteModalMedication = ({
             </button>
             <button
               type="submit"
-              disabled={confirmText !== `${medication.medication_name} remove`}
+              disabled={confirmText !== `${medName} remove`}
               className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Remove
