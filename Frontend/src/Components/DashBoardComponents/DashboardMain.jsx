@@ -45,21 +45,19 @@ const DashboardMain = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-
-
   return (
     <div className="flex flex-col h-screen">
       {/* Navbar remains fixed at the top */}
-      <div className="fixed top-0 left-0 w-full z-30 bg-white shadow-md">
+      <div className="fixed top-0 left-0 w-full z-30 bg-background shadow-md">
         <NavBar />
       </div>
 
-      <div className="flex flex-1 pt-16 bg-gray-100">
+      <div className="flex flex-1 pt-16 bg-background">
         {/* Mobile hamburger menu button */}
         <div className="md:hidden fixed top-4 left-4 z-20">
           <button
             onClick={toggleSidebar}
-            className="p-2 bg-white rounded-md shadow-md"
+            className="p-2 bg-background rounded-md shadow-md"
           >
             {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -67,12 +65,12 @@ const DashboardMain = () => {
 
         {/* Sidebar navigation */}
         <div
-          className={`fixed md:relative w-64 h-full bg-white shadow-md z-10 transition-all duration-300 ${
+          className={`fixed md:relative w-64 h-full bg-background shadow-md z-10 transition-all duration-300 ${
             isSidebarOpen ? "left-0" : "-left-64 md:left-0"
           }`}
         >
-          <div className="p-4 border-b">
-            <h1 className="text-xl font-bold text-blue-600">
+          <div className="p-4 border-b border-border">
+            <h1 className="text-xl font-bold text-primary">
               Health Dashboard
             </h1>
           </div>
@@ -84,8 +82,8 @@ const DashboardMain = () => {
                   to="/thyverse/dashboard"
                   className={`flex items-center w-full p-3 rounded-md transition-colors ${
                     activeTab === "dashboard"
-                      ? "bg-blue-100 text-blue-700"
-                      : "hover:bg-gray-100"
+                      ? "bg-primary/10 text-primary"
+                      : "hover:bg-muted"
                   }`}
                   onClick={() => {
                     setActiveTab("dashboard");
@@ -107,8 +105,8 @@ const DashboardMain = () => {
                   to="/thyverse/dashboard/medication"
                   className={`flex items-center w-full p-3 rounded-md transition-colors ${
                     activeTab === "medications"
-                      ? "bg-blue-100 text-blue-700"
-                      : "hover:bg-gray-100"
+                      ? "bg-primary/10 text-primary"
+                      : "hover:bg-muted"
                   }`}
                   onClick={() => {
                     setActiveTab("medications");
@@ -129,8 +127,8 @@ const DashboardMain = () => {
                   to="/thyverse/dashboard/measurement"
                   className={`flex items-center w-full p-3 rounded-md transition-colors ${
                     activeTab === "measurements"
-                      ? "bg-blue-100 text-blue-700"
-                      : "hover:bg-gray-100"
+                      ? "bg-primary/10 text-primary"
+                      : "hover:bg-muted"
                   }`}
                   onClick={() => {
                     setActiveTab("measurements");
@@ -151,8 +149,8 @@ const DashboardMain = () => {
                   to="/thyverse/dashboard/vitalinput"
                   className={`flex items-center w-full p-3 rounded-md transition-colors ${
                     activeTab === "vitals"
-                      ? "bg-blue-100 text-blue-700"
-                      : "hover:bg-gray-100"
+                      ? "bg-primary/10 text-primary"
+                      : "hover:bg-muted"
                   }`}
                   onClick={() => {
                     setActiveTab("vitals");
@@ -173,8 +171,8 @@ const DashboardMain = () => {
                   to="/thyverse/dashboard/thyroidpanel"
                   className={`flex items-center w-full p-3 rounded-md transition-colors ${
                     activeTab === "thyroid"
-                      ? "bg-blue-100 text-blue-700"
-                      : "hover:bg-gray-100"
+                      ? "bg-primary/10 text-primary"
+                      : "hover:bg-muted"
                   }`}
                   onClick={() => {
                     setActiveTab("thyroid");
@@ -195,8 +193,8 @@ const DashboardMain = () => {
                   to="/thyverse/dashboard/settings"
                   className={`flex items-center w-full p-3 rounded-md transition-colors ${
                     activeTab === "settings"
-                      ? "bg-blue-100 text-blue-700"
-                      : "hover:bg-gray-100"
+                      ? "bg-primary/10 text-primary"
+                      : "hover:bg-muted"
                   }`}
                   onClick={() => {
                     setActiveTab("settings");
@@ -214,14 +212,11 @@ const DashboardMain = () => {
             </ul>
           </nav>
         </div>
-
-       
       </div>
 
-    
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-0 md:hidden"
+          className="fixed inset-0 bg-black/50 z-0 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}

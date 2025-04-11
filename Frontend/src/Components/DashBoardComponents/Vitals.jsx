@@ -39,48 +39,67 @@ const Vitals = () => {
   const [errors, setErrors] = useState({});
   // Loading state for API calls
   const [loading, setLoading] = useState(false);
-// Fetch vitals from the backend and transform the data
-const fetchVitals = async () => {
-  if (!currentUser) return;
-  try {
-    const response = await axios.get(
-      `https://thyverse-backend.vercel.app/server/dashuser/get-vitals/${currentUser._id}`
-    );
-    if (response.data.success) {
-      const data = response.data;
-      console.log("Fetched vitals:", data);
-      let records = [];
-      // Ensure that systolic, diastolic, and pulse are arrays
-      if (
-        Array.isArray(data.systolic) &&
-        Array.isArray(data.diastolic) &&
-        Array.isArray(data.pulse)
-      ) {
-        const len = Math.min(
-          data.systolic.length,
-          data.diastolic.length,
-          data.pulse.length
-        );
-        for (let i = 0; i < len; i++) {
-          records.push({
-            // Using systolic's date (assuming all three arrays share the same date)
-            date: data.systolic[i].date,
-            systolic: data.systolic[i].value,
-            diastolic: data.diastolic[i].value,
-            pulse: data.pulse[i].value,
-          });
-        }
-      }
-      setVitals(records);
-    } else {
-      toast.error("Failed to fetch vitals");
-    }
-  } catch (error) {
-    console.error("Error fetching vitals:", error);
-    toast.error("Error fetching vitals");
-  }
-};
 
+  // Fetch vitals from the backend and transform the data
+  const fetchVitals = async () => {
+    try {
+      if (currentUser) {
+        const response = await axios.get(
+          `https://thyverse-backend.vercel.app/server/dashuser/get-vitals/${currentUser._id}`
+        );
+        if (response.data.success) {
+          const data = response.data;
+          console.log("Fetched vitals:", data);
+          let records = [];
+          // Ensure that systolic, diastolic, and pulse are arrays
+          if (
+            Array.isArray(data.systolic) &&
+            Array.isArray(data.diastolic) &&
+            Array.isArray(data.pulse)
+          ) {
+            const len = Math.min(
+              data.systolic.length,
+              data.diastolic.length,
+              data.pulse.length
+            );
+            for (let i = 0; i < len; i++) {
+              records.push({
+                // Using systolic's date (assuming all three arrays share the same date)
+                date: data.systolic[i].date,
+                systolic: data.systolic[i].value,
+                diastolic: data.diastolic[i].value,
+                pulse: data.pulse[i].value,
+              });
+            }
+          }
+          setVitals(records);
+          
+          // Also store in localStorage for offline access
+          localStorage.setItem('vitals', JSON.stringify(records));
+        } else {
+          toast.error("Failed to fetch vitals");
+          // Fallback to localStorage if API fails
+          loadVitalsFromLocalStorage();
+        }
+      } else {
+        // Load from localStorage if not logged in
+        loadVitalsFromLocalStorage();
+      }
+    } catch (error) {
+      console.error("Error fetching vitals:", error);
+      toast.error("Error fetching vitals");
+      // Fallback to localStorage if API fails
+      loadVitalsFromLocalStorage();
+    }
+  };
+
+  // Helper function to load vitals from localStorage
+  const loadVitalsFromLocalStorage = () => {
+    const storedVitals = JSON.parse(localStorage.getItem('vitals')) || [];
+    if (storedVitals.length > 0) {
+      setVitals(storedVitals);
+    }
+  };
 
   useEffect(() => {
     fetchVitals();
@@ -130,6 +149,23 @@ const fetchVitals = async () => {
         payload
       );
       if (response.data.success) {
+        // Store vitals in localStorage
+        const vitalsData = {
+          systolic: Number(newVitals.systolic),
+          diastolic: Number(newVitals.diastolic),
+          pulse: Number(newVitals.pulse),
+          date: new Date().toISOString(),
+        };
+        
+        // Get existing vitals from localStorage
+        const existingVitals = JSON.parse(localStorage.getItem('vitals')) || [];
+        
+        // Add new vitals to the array
+        existingVitals.push(vitalsData);
+        
+        // Save back to localStorage
+        localStorage.setItem('vitals', JSON.stringify(existingVitals));
+        
         toast.success("Vitals added successfully!");
         // Re-fetch vitals after a successful addition
         fetchVitals();
@@ -139,7 +175,28 @@ const fetchVitals = async () => {
       }
     } catch (error) {
       console.error("Error adding vitals:", error);
-      toast.error("Error adding vitals");
+      // Even if backend save fails, store in localStorage as fallback
+      const vitalsData = {
+        systolic: Number(newVitals.systolic),
+        diastolic: Number(newVitals.diastolic),
+        pulse: Number(newVitals.pulse),
+        date: new Date().toISOString(),
+      };
+      
+      // Get existing vitals from localStorage
+      const existingVitals = JSON.parse(localStorage.getItem('vitals')) || [];
+      
+      // Add new vitals to the array
+      existingVitals.push(vitalsData);
+      
+      // Save back to localStorage
+      localStorage.setItem('vitals', JSON.stringify(existingVitals));
+      
+      // Update state with the new vitals
+      setVitals(existingVitals);
+      
+      toast.success("Vitals saved to local storage!");
+      setNewVitals({ systolic: "", diastolic: "", pulse: "" });
     }
     setLoading(false);
   };
